@@ -64,6 +64,7 @@ public class CalculateEndTime {
 			System.out.println("handle seq : " + count);
 			count++;
 		}
+		updatePs.executeBatch();
 		updatePs.clearBatch();
 		updatePs.close();
 
