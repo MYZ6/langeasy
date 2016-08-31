@@ -102,12 +102,14 @@ function initPlayerlist() {
 			next.click();
 			// back arrow
 		} else if (unicode == 37) {
-			var prev = $('li.playing').prev();
+			var prev = $('.audio-item.playing').prev();
 			if (!prev.length)
 				prev = $('.audio-item').last();
 			prev.click();
 			// spacebar
 		} else if (unicode == 32) {
+			e.preventDefault();
+			
 			audioInstance.playPause();
 		}
 	});
