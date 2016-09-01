@@ -56,6 +56,10 @@ public class VocabularyServlet extends HttpServlet {
 				String sentenceid = request.getParameter("id");
 				String filepath = "e:/langeasy/sentence" + sentenceid + ".mp3";
 				outMp3(request, response, filepath);
+			} else if ("p".equals(type)) {
+				String path = request.getParameter("path");
+				String filepath = "e:/langeasy/pronunciation/" + path;
+				outMp3(request, response, filepath);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

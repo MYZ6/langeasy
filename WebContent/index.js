@@ -45,7 +45,8 @@ function showWord(wordId) {
 			$('title').html("" + data.word);
 			$('#word-title').html(data.word);
 			$('#pron').html(data.pron);
-			$('#pron').append('<audio controls src="' + data.oggpath + '">sdfd</audio>');
+			var pronUrl = root + '/api?t=p&path=' + data.oggpath;
+			$('#pron').append('<audio controls src="' + pronUrl + '">sdfd</audio>');
 			$('#btn-listen').click(function() {
 				window.open(data.oggpath);
 			});
@@ -62,7 +63,7 @@ function showWord(wordId) {
 
 			$(data.aexample).each(function(i, item) {
 				var _url = root + '/api?t=m&id=' + item.sentenceid;
-				$sentence = $('<div class="aexample audio-item" data-src="' + _url + '">' + item.sentence + '</div>');
+				$sentence = $('<div class="aexample audio-item" data-src="' + _url + '"><span>' + item.sentenceid+'</span>'+ item.sentence + '</div>');
 
 				// $sentence.append('<audio controls src="' + _url +
 				// '">sdfd</audio>');

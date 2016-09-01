@@ -60,11 +60,13 @@ public class Vocabulary {
 		st.setInt(1, wordid);
 		ResultSet rs = st.executeQuery();
 		JSONObject wordMap = new JSONObject();
+		String pronPrefix = "https://www.oxforddictionaries.com/media/english/";
 		while (rs.next()) {
 			String word = rs.getString("word");
 			String pron = rs.getString("pron");
 			String mp3path = rs.getString("mp3path");
 			String oggpath = rs.getString("oggpath");
+			oggpath = oggpath.substring(pronPrefix.length());
 			wordMap.put("wordid", wordid);
 			wordMap.put("word", word);
 			wordMap.put("pron", pron);
