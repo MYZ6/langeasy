@@ -31,7 +31,14 @@ public class CaptureUtil {
 		}
 
 		return conn;
+	}
 
+	public static void closeConnection(Connection conn) {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static Document timeoutRequest(String url) {
