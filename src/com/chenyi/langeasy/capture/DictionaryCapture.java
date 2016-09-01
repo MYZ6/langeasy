@@ -31,6 +31,7 @@ public class DictionaryCapture {
 
 		Connection conn = CaptureUtil.getConnection();
 		listWord(conn);
+		CaptureUtil.closeConnection(conn);
 	}
 
 	private static List<Map<String, String>> listWord(Connection conn)

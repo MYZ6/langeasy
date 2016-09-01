@@ -27,8 +27,9 @@ public class SentenceCapture {
 		// Document doc = Jsoup.parse(sResult);
 		// Elements liArr = doc.select("#lrcContent li");
 
-		listCourse(CaptureUtil.getConnection());
-
+		Connection conn = CaptureUtil.getConnection();
+		listCourse(conn);
+		CaptureUtil.closeConnection(conn);
 	}
 
 	private static List<Map<String, String>> listCourse(Connection conn)

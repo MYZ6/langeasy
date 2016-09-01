@@ -26,7 +26,10 @@ public class AudioDownloader {
 
 	public static void main(String[] args) throws FileNotFoundException, SQLException, IOException {
 		httpclient = HttpClients.createDefault();
-		listCourse(CaptureUtil.getConnection());
+		Connection conn = CaptureUtil.getConnection();
+		listCourse(conn);
+		conn.close();
+		httpclient.close();
 	}
 
 	private static void listCourse(Connection conn) throws SQLException, FileNotFoundException, IOException {

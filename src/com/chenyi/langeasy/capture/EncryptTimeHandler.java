@@ -18,8 +18,11 @@ public class EncryptTimeHandler {
 
 	public static void main(String[] args) throws IOException, JSONException, SQLException {
 		Connection conn = CaptureUtil.getConnection();
+
 		listSentence(conn);
 		updateDecodetime(conn);
+
+		CaptureUtil.closeConnection(conn);
 	}
 
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();

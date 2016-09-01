@@ -20,6 +20,7 @@ public class CalculateEndTime {
 		Connection conn = CaptureUtil.getConnection();
 		listSentence(conn);
 		updateEndTime(conn);
+		conn.close();
 	}
 
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();

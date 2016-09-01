@@ -16,8 +16,9 @@ import org.json.JSONException;
 
 public class SentenceAudioClipper {
 	public static void main(String[] args) throws IOException, JSONException, SQLException {
-		listSentence(CaptureUtil.getConnection());
-
+		Connection conn = CaptureUtil.getConnection();
+		listSentence(conn);
+		CaptureUtil.closeConnection(conn);
 	}
 
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();

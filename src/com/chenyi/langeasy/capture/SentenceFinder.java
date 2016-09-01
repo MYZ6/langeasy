@@ -17,8 +17,9 @@ import org.json.JSONException;
 
 public class SentenceFinder {
 	public static void main(String[] args) throws IOException, JSONException, SQLException {
-		listWord(CaptureUtil.getConnection());
-
+		Connection conn = CaptureUtil.getConnection();
+		listWord(conn);
+		CaptureUtil.closeConnection(conn);
 	}
 
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();
