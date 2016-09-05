@@ -80,11 +80,11 @@ public class AudioDownloader {
 		System.out.println(total);
 		int step = 30;
 
-		// AudioDownloader downloader = new AudioDownloader();
-		// for (int i = 0; i < 13; i++) {
-		// Job job = downloader.new Job(i);
-		// job.start();
-		// }
+		AudioDownloader downloader = new AudioDownloader();
+		for (int i = 0; i < 1; i++) {
+			Job job = downloader.new Job(i);
+			job.start();
+		}
 
 	}
 
@@ -98,8 +98,6 @@ public class AudioDownloader {
 		}
 
 		public void run() {
-			Connection conn = CaptureUtil.getConnection();
-
 			int step = 1;
 			int start = jobIndex * step;
 			List<Map<String, String>> subLst = downloadLst.subList(start, start + step);
@@ -113,8 +111,6 @@ public class AudioDownloader {
 					e.printStackTrace();
 				}
 			}
-
-			CaptureUtil.closeConnection(conn);
 		}
 
 		public void start() {
