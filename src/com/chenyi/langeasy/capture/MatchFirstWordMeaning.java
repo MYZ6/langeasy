@@ -19,7 +19,7 @@ public class MatchFirstWordMeaning {
 	public static void main(String[] args) throws IOException, JSONException, SQLException {
 		Connection conn = CaptureUtil.getConnection();
 		listSentence(conn);
-		updateChinese(conn);
+		updateMeaningId(conn);
 		conn.close();
 	}
 
@@ -44,7 +44,7 @@ public class MatchFirstWordMeaning {
 		return null;
 	}
 
-	private static Integer updateChinese(Connection conn) throws JSONException, SQLException {
+	private static Integer updateMeaningId(Connection conn) throws JSONException, SQLException {
 		String usql = "update vocabulary set meaningid = ? where id = ?";
 		PreparedStatement updatePs = conn.prepareStatement(usql);
 
