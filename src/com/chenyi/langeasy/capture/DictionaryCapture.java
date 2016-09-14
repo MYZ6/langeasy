@@ -36,7 +36,8 @@ public class DictionaryCapture {
 
 	private static List<Map<String, String>> listWord(Connection conn)
 			throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT id, word from vocabulary where pron is null";
+		//		String sql = "SELECT id, word from vocabulary where pron is null";
+		String sql = "SELECT id, dfrom as word from vocabulary where dfrom is not null and id = 196";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		List<Map<String, Object>> wordLst = new ArrayList<>();
@@ -63,6 +64,7 @@ public class DictionaryCapture {
 	private static void handleWord(Connection conn, Integer wordid, String word)
 			throws JSONException, SQLException, FileNotFoundException, IOException {
 		String url = "https://www.oxforddictionaries.com/definition/english/" + word;
+		//		url = "https://www.oxforddictionaries.com/definition/english/a-la-carte?q=%C3%A0+la+carte";
 		Document doc = CaptureUtil.timeoutRequest(url);
 
 		if (doc == null) {// not exist, like "approbatory", which is only one of "approbation"'s Derivatives
@@ -140,21 +142,6 @@ public class DictionaryCapture {
 		insPs.executeBatch();
 		insPs.clearBatch();
 		insPs.close();
-	}
-
-	private static int getWordId(Connection conn, String word)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT id FROM vocabulary where word = '" + word + "'";
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery(sql);
-		Integer wordId = null;
-		while (rs.next()) {
-			wordId = rs.getInt("id");
-		}
-		rs.close();
-		st.close();
-
-		return wordId;
 	}
 
 	private static Integer addMeaning(Connection conn, Integer wordid, String type, String meaning, int weight)
