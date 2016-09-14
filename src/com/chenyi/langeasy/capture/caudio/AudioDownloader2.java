@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture;
+package com.chenyi.langeasy.capture.caudio;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,10 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,44 +21,36 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-public class AudioDownloader {
+public class AudioDownloader2 {
 	private static CloseableHttpClient httpclient;
 
 	private static List<Map<String, String>> downloadLst;
 
 	public static void main(String[] args) throws FileNotFoundException, SQLException, IOException {
 		httpclient = HttpClients.createDefault();
-		Connection conn = CaptureUtil.getConnection();
 		System.out.println("start time is : " + new Date());
-		listCourse(conn);
-		conn.close();
+		listCourse();
 		// httpclient.close();
 	}
 
-	private static void listCourse(Connection conn) throws SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT mp3path FROM langeasy.course c WHERE c.courseid IN "
-				+ "( SELECT s.courseid FROM langeasy.vocabulary_audio r "
-				+ "INNER JOIN sentence s ON s.id = r.sentenceid GROUP BY s.courseid)" + "limit 5000";
-
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery(sql);
-		List<String> recordLst = new ArrayList<>();
-		while (rs.next()) {
-			String mp3path = rs.getString("mp3path");
-			recordLst.add(mp3path);
-		}
-		rs.close();
-		st.close();
-
+	private static void listCourse() throws SQLException, FileNotFoundException, IOException {
+		String[] fileArr = new String[] { "ListenData/269296427/1684575709.mp3", "ListenData/1404568722/1415012900.mp3",
+				"ListenData/977915444/2054856991.mp3", "ListenData/538418611/216561888.mp3",
+				"ListenData/100279329/1230981771.mp3", "ListenData/349559752/1919249301.mp3",
+				"ListenData/538418611/1235380786.mp3", "ListenData/1694965458/1154810428.mp3",
+				"ListenData/349559752/2036962820.mp3", "ListenData/1694965458/376064581.mp3",
+				"ListenData/538418611/1600531794.mp3", "ListenData/1983179718/680991519.mp3",
+				"ListenData/134132630/592709876.mp3", "ListenData/915900259/1952231911.mp3",
+				"ListenData/270963162/1379157890.mp3" };
 		int count = 0;
 		downloadLst = new ArrayList<>();
-		for (String mp3path : recordLst) {
+		for (String mp3path : fileArr) {
 			count++;
 			System.out.println("find seq : " + count);
 			String filepath = "e:/langeasy/" + mp3path;// "ListenData/1688236492/2089837271.mp3";
 			File saveFile = new File(filepath);
 			if (saveFile.exists()) {
-				continue;
+				// continue;
 			}
 			String dirpath = saveFile.getParent();
 			File dir = new File(dirpath);
@@ -78,10 +67,12 @@ public class AudioDownloader {
 		}
 		int total = downloadLst.size();// about 1800
 		System.out.println(total);
-		int step = 30;
+		if (total > -1) {
+			// return;
+		}
 
-		AudioDownloader downloader = new AudioDownloader();
-		for (int i = 0; i < 1; i++) {
+		AudioDownloader2 downloader = new AudioDownloader2();
+		for (int i = 0; i < 15; i++) {
 			Job job = downloader.new Job(i);
 			job.start();
 		}
@@ -100,6 +91,7 @@ public class AudioDownloader {
 		public void run() {
 			int step = 1;
 			int start = jobIndex * step;
+			System.out.println(start + "\t" + (start + step));
 			List<Map<String, String>> subLst = downloadLst.subList(start, start + step);
 			int count = 0;
 			for (Map<String, String> map : subLst) {

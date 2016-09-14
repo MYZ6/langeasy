@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture;
+package com.chenyi.langeasy.capture.saudio;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +15,9 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import com.chenyi.langeasy.capture.CaptureUtil;
+import com.chenyi.langeasy.capture.ffmpeg.FfmpegClip;
+
 public class SentenceAudioClipper {
 	public static void main(String[] args) throws IOException, JSONException, SQLException {
 		Connection conn = CaptureUtil.getConnection();
@@ -29,9 +32,11 @@ public class SentenceAudioClipper {
 
 	private static void listSentence(Connection conn)
 			throws JSONException, SQLException, FileNotFoundException, IOException {
+		String idArr = "371343, 373811";
 		String sql = "SELECT s.id, s.decodestarttime, s.endtime, c.mp3path FROM langeasy.vocabulary_audio r "
 				+ "LEFT JOIN sentence s ON s.id = r.sentenceid "
-				+ "LEFT JOIN langeasy.course c ON c.courseid = s.courseid GROUP BY r.sentenceid limit 5000";
+				+ "LEFT JOIN langeasy.course c ON c.courseid = s.courseid where s.id in (" + idArr
+				+ ") GROUP BY r.sentenceid limit 5000";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		while (rs.next()) {
@@ -58,7 +63,7 @@ public class SentenceAudioClipper {
 			String saveFilepath = "e:/langeasy/sentence/" + sentenceid + ".mp3";
 			File saveFile = new File(saveFilepath);
 			if (saveFile.exists()) {
-				continue;
+				// continue;
 			}
 			String dirpath = saveFile.getParent();
 			File dir = new File(dirpath);
@@ -71,7 +76,7 @@ public class SentenceAudioClipper {
 			String mp3FilePath = "e:/langeasy/" + mp3path;// "ListenData/1688236492/2089837271.mp3";
 
 			long startMillis = (Integer) map.get("starttime"), endMillis = (Integer) map.get("endtime");
-			String formatLength = FfmpegTest.format(endMillis - startMillis);
+			String formatLength = FfmpegClip.format(endMillis - startMillis);
 			if (endMillis == 0) {
 				formatLength = "to_end";
 			}
@@ -79,18 +84,26 @@ public class SentenceAudioClipper {
 			Map<String, String> clipper = new HashMap<>();
 			clipper.put("mp3FilePath", mp3FilePath);
 			clipper.put("saveFilepath", saveFilepath);
-			clipper.put("starttime", FfmpegTest.format(startMillis));
+			clipper.put("starttime", FfmpegClip.format(startMillis));
 			clipper.put("length", formatLength);
 			clipperLst.add(clipper);
 			// FfmpegTest.clip(mp3FilePath, starttime, length, saveFilepath);
 		}
+		if (clipperLst.size() > 0) {
+			System.out.println(clipperLst.size());
+			// return;
+		}
 
 		int total = clipperLst.size();// about 1800
 		System.out.println(total);
+		System.out.println();
 		int step = 30;
+		if (total > -1) {
+			// return;
+		}
 
 		SentenceAudioClipper manager = new SentenceAudioClipper();
-		for (int i = 0; i < 360; i++) {
+		for (int i = 0; i < 2; i++) {
 			Job job = manager.new Job(i);
 			job.start();
 		}
@@ -107,9 +120,7 @@ public class SentenceAudioClipper {
 		}
 
 		public void run() {
-			Connection conn = CaptureUtil.getConnection();
-
-			int step = 10;
+			int step = 1;
 			int start = jobIndex * step;
 			List<Map<String, String>> subLst = clipperLst.subList(start, start + step);
 			int count = 0;
@@ -117,14 +128,12 @@ public class SentenceAudioClipper {
 				count++;
 				System.err.println("job" + jobIndex + " clip seq : " + count);
 				try {
-					FfmpegTest.clip(map.get("mp3FilePath"), map.get("starttime"), map.get("length"),
+					FfmpegClip.clip(map.get("mp3FilePath"), map.get("starttime"), map.get("length"),
 							map.get("saveFilepath"));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-
-			CaptureUtil.closeConnection(conn);
 		}
 
 		public void start() {

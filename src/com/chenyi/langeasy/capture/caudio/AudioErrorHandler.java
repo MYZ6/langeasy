@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture;
+package com.chenyi.langeasy.capture.caudio;
 
 import java.io.File;
 import java.io.IOException;
