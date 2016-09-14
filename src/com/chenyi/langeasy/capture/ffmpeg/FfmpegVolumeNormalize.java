@@ -18,9 +18,8 @@ public class FfmpegVolumeNormalize {
 	public static String ffmpegPath = "E:/ffmpeg/ffmpeg-20160828-a37e6dd-win64-shared/bin/ffmpeg.exe";
 
 	public static void main(String[] args) throws IOException {
-		arr = new JSONArray();
 		System.out.println("start time is : " + new Date());
-		test();
+		//		test();
 
 		// normalize(1, 29.2, new File("E:/langeasy/sentence/7681.mp3"));
 		// try {
@@ -68,12 +67,13 @@ public class FfmpegVolumeNormalize {
 
 	}
 
-	public static void normalize(int jobIndex, double mean_volume2, File file) throws IOException {
+	public static void normalize(int jobIndex, double mean_volume2, File srcFile, String destFilePath)
+			throws IOException {
 		List<String> clipCmdLst = new ArrayList<>();
 		clipCmdLst.add(ffmpegPath);
 		clipCmdLst.add("-y");
 		clipCmdLst.add("-i");
-		clipCmdLst.add(file.getAbsolutePath());
+		clipCmdLst.add(srcFile.getAbsolutePath());
 		clipCmdLst.add("-af");
 
 		double rate = 25 / 37.8;
@@ -86,7 +86,7 @@ public class FfmpegVolumeNormalize {
 		// clipCmdLst.add("volume=" + rate);
 		double change = mean_volume2 - 25;
 		clipCmdLst.add("volume=" + change + "dB");
-		clipCmdLst.add("E:/langeasy/sentence_normalize/" + file.getName());
+		clipCmdLst.add(destFilePath);
 		// String result = "";
 		// for (String param : clipCmdLst) {
 		// result += param + " ";
@@ -99,38 +99,20 @@ public class FfmpegVolumeNormalize {
 		System.out.println("jobIndex : " + jobIndex);
 
 		// Watch the process
-		watch(process, file.getName());
+		watch(process, srcFile.getName());
 
 	}
 
-	public static JSONArray arr;
-
-	private static void watch(final Process process, final String sentence) {
+	private static void watch(final Process process, final String filename) {
 		new Thread() {
 			public void run() {
 				long start = System.currentTimeMillis();
 				BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				String line = null;
 				String result = "";
-				JSONObject json = new JSONObject();
-				json.put("sentence", sentence);
 				try {
 					while ((line = input.readLine()) != null) {
-						int mstart = line.indexOf("mean_volume");
-						if (mstart > -1) {
-							String sub = line.substring(mstart + 13);
-							System.out.println(sub);
-							json.put("mean_volume", sub);
-							json.put("mean_volume2", sub.substring(1, sub.indexOf(" dB")));
-						}
-						int maxstart = line.indexOf("max_volume");
-						if (maxstart > -1) {
-							String sub = line.substring(maxstart + 12);
-							// System.out.println(sub);
-							json.put("max_volume", sub);
-							json.put("max_volume2", sub.substring(1, sub.indexOf(" dB")));
-						}
-						// System.out.println(line);
+						//						System.out.println(line);
 						result += line;
 					}
 					long end = System.currentTimeMillis();
@@ -138,8 +120,7 @@ public class FfmpegVolumeNormalize {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				arr.put(json);
-				// System.out.println(result);
+				//				System.out.println(result);
 			}
 		}.start();
 	}
@@ -147,18 +128,19 @@ public class FfmpegVolumeNormalize {
 	class Job implements Runnable {
 		private Thread t;
 		private int jobIndex;
-		private File file;
+		private File srcFile;
 		private double mean_volume2;
 
 		Job(int jobIndex, double mean_volume2, File file) {
 			this.jobIndex = jobIndex;
-			this.file = file;
+			this.srcFile = file;
 			this.mean_volume2 = mean_volume2;
 		}
 
 		public void run() {
 			try {
-				normalize(jobIndex, mean_volume2, file);
+				String destFilePath = "E:/langeasy/sentence_normalize/" + srcFile.getName();
+				normalize(jobIndex, mean_volume2, srcFile, destFilePath);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -166,7 +148,7 @@ public class FfmpegVolumeNormalize {
 
 		public void start() {
 			if (t == null) {
-				t = new Thread(this, "job" + file.getName());
+				t = new Thread(this, "job" + srcFile.getName());
 				t.start();
 			}
 		}

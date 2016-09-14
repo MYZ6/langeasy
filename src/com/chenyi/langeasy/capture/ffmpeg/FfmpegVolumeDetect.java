@@ -17,10 +17,10 @@ public class FfmpegVolumeDetect {
 	public static void main(String[] args) throws IOException {
 		arr = new JSONArray();
 		System.out.println("start time is : " + new Date());
-		test();
+		//		list();
 
 		// detect(1, new File("E:/langeasy/sentence/415907.mp3"));
-		// detect(1, new File("E:/test33.mp3"));
+		detect(1, new File("E:/banal__gb_1.ogg"));
 		// try {
 		// Thread.sleep(1000);
 		// } catch (InterruptedException e) {
@@ -29,7 +29,7 @@ public class FfmpegVolumeDetect {
 		// System.out.println(arr);
 	}
 
-	public static void test() throws IOException {
+	public static void list() throws IOException {
 		// File dir = new File("E:/langeasy/sentence");
 		File dir = new File("E:/langeasy/sentence_normalize");
 		int count = 0;
