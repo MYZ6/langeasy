@@ -1,6 +1,7 @@
-package com.chenyi.langeasy.capture;
+package com.chenyi.langeasy.capture.ffmpeg;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -8,13 +9,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class FfmpegTest {
+public class FfmpegClip {
 	public static String ffmpegPath = "E:/ffmpeg/ffmpeg-20160828-a37e6dd-win64-shared/bin/ffmpeg.exe";
 
 	public static void main(String[] args) throws IOException {
 		String inputFile = "e:/1035963017.mp3";
 		String cmd = ffmpegPath + " -i " + inputFile + " -f segment -segment_time 60 -c copy e:/out%03d.mp3";
-		System.out.println(cmd);
+		// System.out.println(cmd);
 		// Runtime rt = Runtime.getRuntime();
 		// Process pr = rt.exec(cmd);
 
@@ -29,7 +30,8 @@ public class FfmpegTest {
 			formatLength = "to_end";
 		}
 
-		clip(inputFile, format(startMillis), formatLength, "e:/test5.mp3");
+		// clip(inputFile, format(startMillis), formatLength, "e:/test5.mp3");
+		test();
 	}
 
 	/**
@@ -45,10 +47,42 @@ public class FfmpegTest {
 				millis % TimeUnit.SECONDS.toMillis(1));
 	}
 
+	public static void test() throws IOException {
+		File dir = new File("E:/langeasy/sentence");
+		for (File file : dir.listFiles()) {
+			List<String> clipCmdLst = new ArrayList<>();
+			clipCmdLst.add(ffmpegPath);
+			// clipCmdLst.add("-loglevel");
+			// clipCmdLst.add("warning");
+			clipCmdLst.add("-i");
+			clipCmdLst.add("E:/langeasy/sentence/1925.mp3");
+			clipCmdLst.add("-af");
+			clipCmdLst.add("volumedetect");
+			clipCmdLst.add("-f");
+			clipCmdLst.add("null");
+			clipCmdLst.add("/dev/null");
+			String result = "";
+			for (String param : clipCmdLst) {
+				result += param + " ";
+			}
+			System.out.println(result);
+
+			ProcessBuilder builder = new ProcessBuilder(clipCmdLst);
+			builder.redirectErrorStream(true);
+			final Process process = builder.start();
+
+			// Watch the process
+			watch(process, "");
+
+		}
+
+	}
+
 	public static void clip(String inputFilePath, String startSeconds, String length, String outFileName)
 			throws IOException {
 		List<String> clipCmdLst = new ArrayList<>();
 		clipCmdLst.add(ffmpegPath);
+		clipCmdLst.add("-y");// Overwrite output files without asking
 		clipCmdLst.add("-loglevel");
 		clipCmdLst.add("warning");
 		clipCmdLst.add("-i");
