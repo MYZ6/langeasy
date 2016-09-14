@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture;
+package com.chenyi.langeasy.capture.pron;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +24,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+
+import com.chenyi.langeasy.capture.CaptureUtil;
 
 public class PronunciationDownloader {
 	private static CloseableHttpClient httpclient;
