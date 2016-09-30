@@ -54,19 +54,33 @@ public class VocabularyServlet extends HttpServlet {
 				outJS(response, word.toString());
 			} else if ("m".equals(type)) {
 				String sentenceid = request.getParameter("id");
-				String filepath = "e:/langeasy/sentence" + sentenceid + ".mp3";
+				String filepath = "e:/langeasy/sentence_normalize/" + sentenceid + ".mp3";
 				outMp3(request, response, filepath);
 			} else if ("p".equals(type)) {
 				String path = request.getParameter("path");
-				String filepath = "e:/langeasy/pronunciation/" + path;
+				String filepath = "e:/langeasy/pronunciation-normalize/" + path;
 				outMp3(request, response, filepath);
+			} else if ("pass".equals(type)) {
+				String wordid = request.getParameter("id");
+				Vocabulary.pass(conn, Integer.parseInt(wordid));
+			} else if ("dB".equals(type)) {
+				JSONArray arr = Sentence.listSentenceByDB();
+				outJS(response, arr.toString());
+			} else if ("listModifiedSentence".equals(type)) {
+				JSONArray arr = Sentence.listModifiedSentence();
+				outJS(response, arr.toString());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		CaptureUtil.closeConnection(conn);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
