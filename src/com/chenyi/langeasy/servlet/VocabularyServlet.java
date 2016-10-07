@@ -35,8 +35,8 @@ public class VocabularyServlet extends HttpServlet {
 		super();
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		String type = request.getParameter("t");
 		Connection conn = CaptureUtil.getConnection();
 		try {
@@ -54,15 +54,20 @@ public class VocabularyServlet extends HttpServlet {
 				outJS(response, word.toString());
 			} else if ("m".equals(type)) {
 				String sentenceid = request.getParameter("id");
-				String filepath = "e:/langeasy/sentence_normalize/" + sentenceid + ".mp3";
+				String filepath = "e:/langeasy/sentence_normalize/"
+						+ sentenceid + ".mp3";
 				outMp3(request, response, filepath);
 			} else if ("p".equals(type)) {
 				String path = request.getParameter("path");
 				String filepath = "e:/langeasy/pronunciation-normalize/" + path;
 				outMp3(request, response, filepath);
 			} else if ("pass".equals(type)) {
-				String wordid = request.getParameter("id");
+				String wordid = request.getParameter("wordid");
 				Vocabulary.pass(conn, Integer.parseInt(wordid));
+
+				JSONObject result = new JSONObject();
+				result.put("msg", "success");
+				outJS(response, result.toString());
 			} else if ("dB".equals(type)) {
 				JSONArray arr = Sentence.listSentenceByDB();
 				outJS(response, arr.toString());
@@ -74,7 +79,7 @@ public class VocabularyServlet extends HttpServlet {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
@@ -83,8 +88,8 @@ public class VocabularyServlet extends HttpServlet {
 		}
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 
@@ -100,15 +105,17 @@ public class VocabularyServlet extends HttpServlet {
 		}
 	}
 
-	protected void outMp3(HttpServletRequest request, HttpServletResponse response, String filepath)
-			throws IOException {
+	protected void outMp3(HttpServletRequest request,
+			HttpServletResponse response, String filepath) throws IOException {
 		InputStream fis = new FileInputStream(filepath);
 		String mimeType = request.getServletContext().getMimeType(filepath);
-		response.setContentType(mimeType != null ? mimeType : "application/octet-stream");
+		response.setContentType(mimeType != null ? mimeType
+				: "application/octet-stream");
 
 		File file = new File(filepath);
 		response.setContentLength((int) file.length());
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\""
+				+ file.getName() + "\"");
 
 		ServletOutputStream sos = response.getOutputStream();
 		byte[] bufferData = new byte[1024];

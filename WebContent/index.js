@@ -2,7 +2,25 @@ $(function() {
 	initPlayerlist();
 
 	initData();
+
+	$('#passBtn').click(doPass);
 });
+
+function doPass(evt) {
+	$.ajax({
+		type : "GET",
+		url : root + '/api?t=pass',
+		data : {
+			"wordid" : currentWordId
+		},
+		error : function() {
+			console.error("query failed");
+		},
+		success : function(data) {
+			console.log(data);
+		}
+	});
+}
 
 function initData() {
 	if (type == '') {
@@ -17,64 +35,97 @@ function initData() {
 		},
 		success : function(data) {
 			console.log(data);
-			$(data).each(function(i, word) {
-				$word = $('<div id="word' + word.wordid + '">' + word.word + '</div>');
-				$word.click(function() {
-					// var _url = root + '/word.jsp?id=' + word.wordid;
-					// window.open(_url, '_blank');
-					showWord(word.wordid);
-				});
-				$('#word-list').append($word);
-			});
+			$(data)
+					.each(
+							function(i, word) {
+								$word = $('<div id="word' + word.wordid
+										+ '" class="word-item">' + word.word
+										+ '</div>');
+								$word.click(function() {
+									// var _url = root + '/word.jsp?id=' +
+									// word.wordid;
+									// window.open(_url, '_blank');
+									showWord(word.wordid);
+								});
+								$('#word-list').append($word);
+							});
+			$('.word-item').eq(0).trigger('click');
 		}
 	});
 }
 
+var currentWordId = null;
 function showWord(wordId) {
-	$.ajax({
-		type : "GET",
-		url : root + '/api?t=word&id=' + wordId,
-		async : false,
-		error : function() {
-			console.error("query failed");
-		},
-		success : function(data) {
-			$('#word-title, #pron, #meaning, #audio-example').empty();
+	currentWordId = wordId;
+	$
+			.ajax({
+				type : "GET",
+				url : root + '/api?t=word&id=' + wordId,
+				async : false,
+				error : function() {
+					console.error("query failed");
+				},
+				success : function(data) {
+					$('#word-title, #pron, #meaning, #audio-example').empty();
 
-			console.log(data);
-			$('title').html("" + data.word);
-			$('#word-title').html(data.word);
-			$('#pron').html(data.pron);
-			var pronUrl = root + '/api?t=p&path=' + data.oggpath;
-			$('#pron').append('<audio controls src="' + pronUrl + '">sdfd</audio>');
-			$('#btn-listen').click(function() {
-				window.open(data.oggpath);
-			});
-
-			$(data.meaning).each(
-					function(i, item) {
-						$('#meaning').append(
-								'<div class="meaning-type">' + item.type + '</div><div class="meaning-content">'
-										+ item.meaning + '</div>');
-						$(item.example).each(function(i, item) {
-							$('#meaning').append('<div class="example">' + item.sentence + '</div>');
-						});
+					console.log(data);
+					$('title').html("" + data.word);
+					$('#word-title').html(data.word);
+					$('#pron').html(data.pron);
+					var pronUrl = root + '/api?t=p&path=' + data.oggpath;
+					$('#pron').append(
+							'<audio controls src="' + pronUrl
+									+ '">sdfd</audio>');
+					$('#btn-listen').click(function() {
+						window.open(data.oggpath);
 					});
 
-			$(data.aexample).each(function(i, item) {
-				var _url = root + '/api?t=m&id=' + item.sentenceid;
-				$sentence = $('<div class="aexample audio-item" data-src="' + _url + '"><span>' + item.sentenceid+'</span>'+ item.sentence + '</div>');
+					$(data.meaning)
+							.each(
+									function(i, item) {
+										$('#meaning')
+												.append(
+														'<div class="meaning-type">'
+																+ item.type
+																+ '</div><div class="meaning-content">'
+																+ item.meaning
+																+ '</div>');
+										$(item.example)
+												.each(
+														function(i, item) {
+															$('#meaning')
+																	.append(
+																			'<div class="example">'
+																					+ item.sentence
+																					+ '</div>');
+														});
+									});
 
-				// $sentence.append('<audio controls src="' + _url +
-				// '">sdfd</audio>');
-				// $sentence.click(function() {
-				// window.open(_url);
-				// });
-				$('#audio-example').append($sentence);
+					$(data.aexample)
+							.each(
+									function(i, item) {
+										var _url = root + '/api?t=m&id='
+												+ item.sentenceid + "&ts="
+												+ new Date().getTime();
+										$sentence = $('<div class="aexample audio-item" data-src="'
+												+ _url
+												+ '"><span>'
+												+ item.sentenceid
+												+ '</span>&nbsp;&nbsp;'
+												+ item.sentence + '</div>');
+
+										// $sentence.append('<audio controls
+										// src="' + _url +
+										// '">sdfd</audio>');
+										// $sentence.click(function() {
+										// window.open(_url);
+										// });
+										$('#audio-example').append($sentence);
+									});
+
+					resetPlayer();
+				}
 			});
-			resetPlayer();
-		}
-	});
 }
 
 var audioInstance = null;
@@ -110,7 +161,7 @@ function initPlayerlist() {
 			// spacebar
 		} else if (unicode == 32) {
 			e.preventDefault();
-			
+
 			audioInstance.playPause();
 		}
 	});

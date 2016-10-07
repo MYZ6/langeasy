@@ -1,10 +1,13 @@
 body {
 	font-size: 15px;
+	height: 600px;
 }
 
 #word-list {
 	float: left;
 	width: 150px;
+	height: 100%;
+	overflow: auto;
 }
 
 #word-list div {
@@ -21,7 +24,10 @@ body {
 	padding: 8px;
 	border: 1px solid blue;
 	margin: 5px;
-	height: 800px;
+	height: 100%;
+}
+#passBtn{
+	font-size: 20px;
 }
 
 #word-title {
@@ -85,7 +91,7 @@ a {
 }
 
 #wrapper {
-	width: 400px;
+	width: 600px;
 	margin: 40px auto;
 }
 

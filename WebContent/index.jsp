@@ -20,10 +20,6 @@
 	<script type="text/javascript" src="<%=root %>/index.js"></script>
 </head>
 <body>
-    <div id="wrapper">
-      <h1 id="audio-text">wait what — notorious xx <em>(2009)</em></h1>
-      <audio preload id="audio-player"></audio>
-    </div>
 <!--     <div id="shortcuts"> -->
 <!--       <div> -->
 <!--         <h1>Keyboard shortcuts:</h1> -->
@@ -37,6 +33,13 @@
 	</div>
 
 	<div id="word-content" style="">
+	    <div id="wrapper">
+	      	<h1 id="audio-text">wait what — notorious xx <em>(2009)</em></h1>
+	      	<audio preload id="audio-player"></audio>
+	      
+			<input id="passBtn" type="button" value="Pass" />
+	    </div>
+	    
 		<div id="word-title"></div>
 		<div id="pron"></div>
 		<div id="meaning"></div>

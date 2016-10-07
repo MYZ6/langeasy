@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +16,8 @@ import org.json.JSONObject;
 
 public class Vocabulary {
 
-	static JSONArray listWord(Connection conn) throws JSONException, SQLException, FileNotFoundException, IOException {
+	static JSONArray listWord(Connection conn) throws JSONException,
+			SQLException, FileNotFoundException, IOException {
 		String sql = "SELECT id, word, pron from vocabulary limit 30";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
@@ -35,8 +38,9 @@ public class Vocabulary {
 		return arr;
 	}
 
-	static JSONArray listAword(Connection conn) throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT wordid, word from vocabulary_audio group by wordid limit 2";
+	static JSONArray listAword(Connection conn) throws JSONException,
+			SQLException, FileNotFoundException, IOException {
+		String sql = "SELECT a.wordid, a.word, v.pass from vocabulary_audio a inner join vocabulary v on v.id = a.wordid group by a.wordid limit 20000";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		JSONArray arr = new JSONArray();
@@ -54,7 +58,8 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONObject word(Connection conn, Integer wordid) throws SQLException {
+	public static JSONObject word(Connection conn, Integer wordid)
+			throws SQLException {
 		String sql = "SELECT word, pron, mp3path, oggpath from vocabulary where id = ?";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -81,7 +86,8 @@ public class Vocabulary {
 		return wordMap;
 	}
 
-	public static JSONArray listMeaning(Connection conn, Integer wordid) throws SQLException {
+	public static JSONArray listMeaning(Connection conn, Integer wordid)
+			throws SQLException {
 		String sql = "SELECT id, type, meaning from meaning where wordid = ? order by weight";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -109,7 +115,8 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONArray listExample(Connection conn, Integer meaningid) throws SQLException {
+	public static JSONArray listExample(Connection conn, Integer meaningid)
+			throws SQLException {
 		String sql = "SELECT id, sentence from example_sentence where meaningid = ? order by weight";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, meaningid);
@@ -130,7 +137,8 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONArray listAudioExample(Connection conn, Integer wordid) throws SQLException {
+	public static JSONArray listAudioExample(Connection conn, Integer wordid)
+			throws SQLException {
 		String sql = "SELECT sentenceid, sentence from vocabulary_audio where wordid = ?";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -149,5 +157,19 @@ public class Vocabulary {
 		st.close();
 
 		return arr;
+	}
+
+	public static int pass(Connection conn, int wordid) throws SQLException {
+		String usql = "update vocabulary set pass = 1, mtime = ? where id = ?";
+		PreparedStatement updatePs = conn.prepareStatement(usql);
+
+		updatePs.setTimestamp(1, new Timestamp(new Date().getTime()));
+		updatePs.setInt(2, wordid);
+		updatePs.addBatch();
+		updatePs.executeBatch();
+		updatePs.clearBatch();
+		updatePs.close();
+
+		return 0;
 	}
 }
