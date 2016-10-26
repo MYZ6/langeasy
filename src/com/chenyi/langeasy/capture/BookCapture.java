@@ -4,11 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -28,12 +33,16 @@ public class BookCapture {
 		// JSONObject book = getBookInfo("1688236492");
 
 		Connection conn = CaptureUtil.getConnection();
+		conn.setAutoCommit(false);
 		// insertBook(conn, book);
 		listBook(conn);
 
 		conn.close();
 		httpclient.close();
 	}
+
+	static String booktype = "纪录片";
+	static List<String> bookidLst;
 
 	private static void listBook(Connection conn) throws SQLException, FileNotFoundException, IOException {
 		// String requestUrl =
@@ -69,8 +78,29 @@ public class BookCapture {
 			e.printStackTrace();
 			System.out.println(sResult);
 		}
+		booktype = "纪录片";
+		String sql = "SELECT bookid FROM book b where b.booktype='" + booktype + "' ";
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery(sql);
+
+		bookidLst = new ArrayList<>();
+		while (rs.next()) {
+			String bookid = rs.getString("bookid");
+			bookidLst.add(bookid);
+		}
+		rs.close();
+		st.close();
 
 		insertBook(conn, booklist);
+	}
+
+	private static boolean exist(String bookid) {
+		for (String bid : bookidLst) {
+			if (bookid.equals(bid)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Integer insertBook(Connection conn, JSONArray booklist) throws JSONException, SQLException {
@@ -78,16 +108,33 @@ public class BookCapture {
 		PreparedStatement insPs = conn.prepareStatement(insertSql);
 		for (int i = 0; i < booklist.length(); i++) {
 			JSONObject book = booklist.getJSONObject(i);
-			insPs.setString(1, book.getString("bookid"));
+			String bookid = book.getString("bookid");
+			if (exist(bookid)) {
+				continue;
+			}
+
+			insPs.setString(1, bookid);
 			insPs.setString(2, book.getString("bookname"));
-			insPs.setString(3, "美剧&英剧");
+			insPs.setString(3, booktype);
 			insPs.setString(4, "");
 			insPs.setString(5, book.getString("imagepath"));
 			insPs.setTimestamp(6, new Timestamp(new Date().getTime()));
 			insPs.addBatch();
 		}
+		try {
+			insPs.executeBatch();
+			conn.commit();
+		} catch (BatchUpdateException exception) {
+			exception.printStackTrace();
+			String message = exception.getMessage();
+			System.out.println(message);
+			if (message.indexOf("PRIMARY") > -1) {
+				System.out.println("book" + " is alreay exist.");
+			} else {
+				throw exception;
+			}
+		}
 
-		insPs.executeBatch();
 		insPs.clearBatch();
 		insPs.close();
 
