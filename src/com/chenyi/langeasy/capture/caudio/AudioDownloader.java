@@ -40,6 +40,8 @@ public class AudioDownloader {
 		// httpclient.close();
 	}
 
+	private static int step = 30;
+
 	private static void listCourse(Connection conn) throws SQLException, FileNotFoundException, IOException {
 		String sql = "SELECT mp3path FROM langeasy.course c WHERE c.courseid IN "
 				+ "( SELECT s.courseid FROM langeasy.vocabulary_audio r "
@@ -47,7 +49,7 @@ public class AudioDownloader {
 
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
-		List<String> recordLst = new ArrayList<>();
+		List<String> recordLst = new ArrayList<String>();
 		while (rs.next()) {
 			String mp3path = rs.getString("mp3path");
 			recordLst.add(mp3path);
@@ -56,7 +58,7 @@ public class AudioDownloader {
 		st.close();
 
 		int count = 0;
-		downloadLst = new ArrayList<>();
+		downloadLst = new ArrayList<Map<String, String>>();
 		for (String mp3path : recordLst) {
 			count++;
 			System.out.println("find seq : " + count);
@@ -72,7 +74,7 @@ public class AudioDownloader {
 			}
 			System.out.println(dirpath);
 
-			Map<String, String> map = new HashMap<>();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("mp3path", mp3path);
 			map.put("saveFilePath", filepath);
 			downloadLst.add(map);
@@ -80,10 +82,14 @@ public class AudioDownloader {
 		}
 		int total = downloadLst.size();// about 1800
 		System.out.println(total);
-		int step = 30;
 
+		if (total > -1) {
+			return;
+		}
+
+		step = 1;
 		AudioDownloader downloader = new AudioDownloader();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 11; i++) {
 			Job job = downloader.new Job(i);
 			job.start();
 		}
@@ -100,9 +106,14 @@ public class AudioDownloader {
 		}
 
 		public void run() {
-			int step = 1;
 			int start = jobIndex * step;
-			List<Map<String, String>> subLst = downloadLst.subList(start, start + step);
+			int end = start + step;
+			if (end > downloadLst.size()) {
+				end = downloadLst.size();
+			}
+			System.out.println(start + "\t" + end);
+
+			List<Map<String, String>> subLst = downloadLst.subList(start, end);
 			int count = 0;
 			for (Map<String, String> map : subLst) {
 				count++;
@@ -113,6 +124,7 @@ public class AudioDownloader {
 					e.printStackTrace();
 				}
 			}
+			System.out.println("job" + jobIndex + " last time is : " + new Date());
 		}
 
 		public void start() {

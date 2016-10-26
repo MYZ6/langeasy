@@ -10,14 +10,15 @@ public class SentenceAudioLoader {
 
 	public static void main(String args[]) {
 		try {
-			conn = SqliteHelper.getConnection(null);
+			conn = SqliteHelper.getConnection("sentence-audio");
 
 			int sentenceid = 255;
-			// addAudio(sentenceid, "e:/langeasy/sentence/" + sentenceid + ".mp3");
+			// addAudio(sentenceid, "e:/langeasy/sentence/" + sentenceid +
+			// ".mp3");
 			listAudio();
 			// listWord();
 			// queryAudio(255);
-			//			queryPronAudio(21);
+			// queryPronAudio(21);
 
 			conn.close();
 		} catch (Exception e) {
@@ -27,13 +28,14 @@ public class SentenceAudioLoader {
 	}
 
 	public static void listAudio() {
-		File dir = new File("e:/langeasy/sentence");
+		File dir = new File("e:/langeasy/sentence2_normalize");
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			String filename = file.getName();
-			System.out.println(filename);
+			// System.out.println(filename);
 			String sentenceid = filename.substring(0, filename.indexOf(".mp3"));
-			addAudio(Integer.parseInt(sentenceid), file);
+			System.out.println(sentenceid);
+			// addAudio(Integer.parseInt(sentenceid), file);
 			// break;
 		}
 	}

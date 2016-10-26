@@ -17,7 +17,7 @@ public class AudioErrorHandler {
 	public static void test() throws IOException {
 		File dir = new File("E:/langeasy/sentence");
 		int count = 0;
-		List<String> sentenceLst = new ArrayList<>();
+		List<String> sentenceLst = new ArrayList<String>();
 		for (File file : dir.listFiles()) {
 			count++;
 			// if (file.getName().indexOf("412125") > -1) {
@@ -26,8 +26,8 @@ public class AudioErrorHandler {
 			if (count % 500 != 0) {
 				// continue;
 			}
-			long length = file.length();
-			if (length / 1000 < 20) {
+			long length = file.length();// in bytes
+			if (length / 1000 < 20) {// less than 20kb
 				String filename = file.getName();
 				System.out.println(filename + "\t" + length);
 				sentenceLst.add(filename.substring(0, filename.length() - 4));

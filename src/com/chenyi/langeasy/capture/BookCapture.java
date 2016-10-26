@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -72,7 +74,7 @@ public class BookCapture {
 	}
 
 	private static Integer insertBook(Connection conn, JSONArray booklist) throws JSONException, SQLException {
-		String insertSql = "INSERT INTO book (bookid, bookname, booktype, detail, coverpath) VALUES (?, ?, ?, ?, ?)";
+		String insertSql = "INSERT INTO book (bookid, bookname, booktype, detail, coverpath, ctime) VALUES (?, ?, ?, ?, ?, ?)";
 		PreparedStatement insPs = conn.prepareStatement(insertSql);
 		for (int i = 0; i < booklist.length(); i++) {
 			JSONObject book = booklist.getJSONObject(i);
@@ -81,6 +83,7 @@ public class BookCapture {
 			insPs.setString(3, "美剧&英剧");
 			insPs.setString(4, "");
 			insPs.setString(5, book.getString("imagepath"));
+			insPs.setTimestamp(6, new Timestamp(new Date().getTime()));
 			insPs.addBatch();
 		}
 

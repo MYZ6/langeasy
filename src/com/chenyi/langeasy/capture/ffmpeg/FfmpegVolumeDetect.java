@@ -17,10 +17,10 @@ public class FfmpegVolumeDetect {
 	public static void main(String[] args) throws IOException {
 		arr = new JSONArray();
 		System.out.println("start time is : " + new Date());
-		//		list();
+		list();
 
 		// detect(1, new File("E:/langeasy/sentence/415907.mp3"));
-		detect(1, new File("E:/banal__gb_1.ogg"));
+		// detect(1, new File("E:/langeasy/number/333.mp3"));
 		// try {
 		// Thread.sleep(1000);
 		// } catch (InterruptedException e) {
@@ -30,14 +30,20 @@ public class FfmpegVolumeDetect {
 	}
 
 	public static void list() throws IOException {
-		// File dir = new File("E:/langeasy/sentence");
-		File dir = new File("E:/langeasy/sentence_normalize");
+		File dir = new File("E:/langeasy/sentence2");
+		// File dir = new File("E:/langeasy/sentence_normalize");
+		// File dir = new File("E:/langeasy/number");
 		int count = 0;
 
 		FfmpegVolumeDetect manager = new FfmpegVolumeDetect();
 		for (File file : dir.listFiles()) {
 			count++;
-			if (count % 500 != 0) {
+			if (count % 500 == 0) {
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				// continue;
 			}
 
@@ -118,7 +124,8 @@ public class FfmpegVolumeDetect {
 						result += line;
 					}
 					long end = System.currentTimeMillis();
-					// System.out.println(inputFilePath + ", consuming seconds : " + (end - start));
+					// System.out.println(inputFilePath +
+					// ", consuming seconds : " + (end - start));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

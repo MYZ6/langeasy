@@ -10,7 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -33,6 +35,8 @@ public class CourseCapture {
 		httpclient = HttpClients.createDefault();
 
 		conn = CaptureUtil.getConnection();
+
+		conn.setAutoCommit(false);
 
 		listBook();
 
@@ -63,8 +67,8 @@ public class CourseCapture {
 		}
 	}
 
-	public static JSONObject getBookInfo2(String bookid)
-			throws ClientProtocolException, IOException, JSONException, SQLException {
+	public static JSONObject getBookInfo2(String bookid) throws ClientProtocolException, IOException, JSONException,
+			SQLException {
 		File courseFile = new File("E:\\course.json");
 		String sResult = IOUtils.toString(new FileInputStream(courseFile), "utf-8");
 		sResult = StringEscapeUtils.unescapeJava(sResult);
@@ -80,10 +84,10 @@ public class CourseCapture {
 		return book;
 	}
 
-	public static void getBookInfo(String bookid)
-			throws ClientProtocolException, IOException, JSONException, SQLException {
+	public static void getBookInfo(String bookid) throws ClientProtocolException, IOException, JSONException,
+			SQLException {
 		String requestUrl = "http://langeasy.com.cn/getBookInfo.action?bookid=" + bookid
-				+ "&courpage=1&courrows=1666&pubstate=1";
+				+ "&courpage=1&courrows=3666&pubstate=1";
 		HttpPost httppost = new HttpPost(requestUrl);
 
 		CloseableHttpResponse response = httpclient.execute(httppost);
@@ -113,25 +117,8 @@ public class CourseCapture {
 		insertCourse(book.getJSONArray("courlist"));
 	}
 
-	private static Integer insertBook(Connection conn, JSONObject book) throws JSONException, SQLException {
-		String insertSql = "INSERT INTO book (bookid, bookname, booktype, detail, coverpath) VALUES (?, ?, ?, ?, ?)";
-		PreparedStatement insPs = conn.prepareStatement(insertSql);
-		insPs.setString(1, book.getString("bookid"));
-		insPs.setString(2, book.getString("bookname"));
-		insPs.setString(3, book.getString("booktype"));
-		insPs.setString(4, book.getString("detail"));
-		insPs.setString(5, book.getString("coverpath"));
-		insPs.addBatch();
-
-		insPs.executeBatch();
-		insPs.clearBatch();
-		insPs.close();
-
-		return 0;
-	}
-
 	private static Integer insertCourse(JSONArray courseLst) throws JSONException, SQLException {
-		String insertSql = "INSERT INTO course (courseid, bookid, name, mp3path) VALUES(?, ?, ?, ?)";
+		String insertSql = "INSERT INTO course (courseid, bookid, name, mp3path, ctime) VALUES(?, ?, ?, ?, ?)";
 		PreparedStatement insPs = conn.prepareStatement(insertSql);
 		for (int i = 0; i < courseLst.length(); i++) {
 			JSONObject course = (JSONObject) courseLst.get(i);
@@ -139,10 +126,12 @@ public class CourseCapture {
 			insPs.setString(2, course.getString("bookid"));
 			insPs.setString(3, course.getString("songname"));
 			insPs.setString(4, course.getString("mp3path"));
+			insPs.setTimestamp(5, new Timestamp(new Date().getTime()));
 			insPs.addBatch();
 		}
 
 		insPs.executeBatch();
+		conn.commit();
 		insPs.clearBatch();
 		insPs.close();
 

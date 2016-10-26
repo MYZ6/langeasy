@@ -16,18 +16,22 @@ import org.json.JSONException;
 
 public class MatchFirstWordMeaning {
 
-	public static void main(String[] args) throws IOException, JSONException, SQLException {
+	public static void main(String[] args) throws IOException, JSONException,
+			SQLException {
 		Connection conn = CaptureUtil.getConnection();
-		listSentence(conn);
+		listWord(conn);
 		updateMeaningId(conn);
 		conn.close();
 	}
 
-	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();
+	private static List<Map<String, Object>> wordLst = new ArrayList<>();
 
-	private static List<Map<String, String>> listSentence(Connection conn)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT m2.id, m2.wordid FROM langeasy.meaning m2 INNER JOIN ( SELECT m.wordid, MIN(m.weight) AS weight FROM langeasy.meaning m GROUP BY m.wordid) m3 ON m3.wordid = m2.wordid AND m3.weight = m2.weight";
+	private static List<Map<String, String>> listWord(Connection conn)
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
+		String sql = "SELECT m2.id, m2.wordid, v.word FROM langeasy.meaning m2 "
+				+ "INNER JOIN ( SELECT m.wordid, MIN(m.weight) AS weight FROM langeasy.meaning m GROUP BY m.wordid) m3 ON m3.wordid = m2.wordid AND m3.weight = m2.weight "
+				+ "INNER JOIN vocabulary v ON v.id = m2.wordid WHERE v.meaningid IS NULL";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		while (rs.next()) {
@@ -36,20 +40,23 @@ public class MatchFirstWordMeaning {
 			Map<String, Object> map = new HashMap<>();
 			map.put("meaningid", meaningid);
 			map.put("wordid", wordid);
-			sentenceLst.add(map);
+			System.out.println(rs.getString("word"));
+			wordLst.add(map);
 		}
+		System.out.println(wordLst.size());
 		rs.close();
 		st.close();
 
 		return null;
 	}
 
-	private static Integer updateMeaningId(Connection conn) throws JSONException, SQLException {
+	private static Integer updateMeaningId(Connection conn)
+			throws JSONException, SQLException {
 		String usql = "update vocabulary set meaningid = ? where id = ?";
 		PreparedStatement updatePs = conn.prepareStatement(usql);
 
 		int count = 0;
-		for (Map<String, Object> map : sentenceLst) {
+		for (Map<String, Object> map : wordLst) {
 			Integer meaningid = (Integer) map.get("meaningid");
 			Integer wordid = (Integer) map.get("wordid");
 

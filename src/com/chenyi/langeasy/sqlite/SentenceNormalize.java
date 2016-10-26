@@ -14,7 +14,10 @@ public class SentenceNormalize {
 		try {
 			conn = SqliteHelper.getConnection("sentence-audio");
 
-			listAudio();
+			//			listAudio();
+
+			int[] sidArr = new int[] { 391695, 456369, 623331, 168613, 231711, 412125 };
+			listAudio(sidArr);
 
 			conn.close();
 		} catch (Exception e) {
@@ -22,6 +25,16 @@ public class SentenceNormalize {
 			System.exit(0);
 		}
 
+	}
+
+	public static void listAudio(int[] idArr) {
+		String dirpath = "e:/langeasy/sentence_normalize";
+		for (int sentenceid : idArr) {
+			String filename = dirpath + File.separator + sentenceid + ".mp3";
+			System.out.println(filename);
+			updateAudio(sentenceid, new File(filename));
+			//			break;
+		}
 	}
 
 	public static void listAudio() {
@@ -37,12 +50,13 @@ public class SentenceNormalize {
 	}
 
 	public static void updateAudio(int sentenceId, File file) {
-		String isql = "update sentence_audio set audiodata = ? where sentenceid = ?";
+		String isql = "update sentence_audio set audiodata = ?, mtime = ? where sentenceid = ?";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(isql)) {
 			// set parameters
 			pstmt.setBytes(1, SqliteHelper.readFile(file));
-			pstmt.setInt(2, sentenceId);
+			pstmt.setDate(2, new java.sql.Date(new Date().getTime()));
+			pstmt.setInt(3, sentenceId);
 
 			pstmt.executeUpdate();
 			System.out.println("update " + sentenceId);

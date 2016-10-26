@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class SqliteHelper {
 	private static Connection conn;
@@ -21,7 +22,8 @@ public class SqliteHelper {
 			conn = getConnection(null);
 
 			int sentenceid = 255;
-			// addAudio(sentenceid, "e:/langeasy/sentence/" + sentenceid + ".mp3");
+			// addAudio(sentenceid, "e:/langeasy/sentence/" + sentenceid +
+			// ".mp3");
 			// listAudio();
 			// listWord();
 			// queryAudio(255);
@@ -41,7 +43,12 @@ public class SqliteHelper {
 		}
 		try {
 			Class.forName("org.sqlite.JDBC");
-			conn = DriverManager.getConnection("jdbc:sqlite:e:/langeasy/sqlite/" + dbname + ".db");
+			Properties connectionProps = new Properties();
+			connectionProps.put("cache_size", 15000);
+			connectionProps.put("page_size ", 4096);
+			connectionProps.put("synchronous ", "OFF");
+			connectionProps.put("journal_mode ", "MEMORY");
+			conn = DriverManager.getConnection("jdbc:sqlite:e:/langeasy/sqlite/" + dbname + ".db", connectionProps);
 			System.out.println("Opened database successfully");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

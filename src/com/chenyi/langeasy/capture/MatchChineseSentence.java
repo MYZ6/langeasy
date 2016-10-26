@@ -16,7 +16,8 @@ import org.json.JSONException;
 
 public class MatchChineseSentence {
 
-	public static void main(String[] args) throws IOException, JSONException, SQLException {
+	public static void main(String[] args) throws IOException, JSONException,
+			SQLException {
 		Connection conn = CaptureUtil.getConnection();
 		listSentence(conn);
 		updateChinese(conn);
@@ -26,8 +27,11 @@ public class MatchChineseSentence {
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();
 
 	private static List<Map<String, String>> listSentence(Connection conn)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT a.id, s2.text AS chinese FROM langeasy.vocabulary_audio a INNER JOIN langeasy.sentence s ON s.id = a.sentenceid INNER JOIN langeasy.sentence s2 ON s2.dataindex = s.dataindex AND s2.courseid = s.courseid AND s2.type = 'i18n' limit 10000";
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
+		String sql = "SELECT a.id, s2.text AS chinese FROM langeasy.vocabulary_audio a "
+				+ "INNER JOIN langeasy.sentence s ON s.id = a.sentenceid INNER JOIN langeasy.sentence s2 ON s2.dataindex = s.dataindex AND s2.courseid = s.courseid AND s2.type = 'i18n' "
+				+ "where a.chinese is null limit 10000";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		while (rs.next()) {
@@ -44,7 +48,8 @@ public class MatchChineseSentence {
 		return null;
 	}
 
-	private static Integer updateChinese(Connection conn) throws JSONException, SQLException {
+	private static Integer updateChinese(Connection conn) throws JSONException,
+			SQLException {
 		String usql = "update vocabulary_audio set chinese = ? where id = ?";
 		PreparedStatement updatePs = conn.prepareStatement(usql);
 

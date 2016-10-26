@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class SentenceFinderJob {
 		SentenceFinderJob jobLst = new SentenceFinderJob();
 		System.out.println("start time is : " + new Date());
 		// return;
-		for (int i = 15; i < 45; i++) {
+		for (int i = 0; i < 7; i++) {
 			Job job = jobLst.new Job(i);
 			job.start();
 		}
@@ -60,11 +61,14 @@ public class SentenceFinderJob {
 	}
 
 	private static void listWord(Connection conn, int jobIndex)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
-		int step = 30;
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
+		int step = 200;
 		int startSeq = jobIndex * step;
-		String sql = "SELECT wordid, word from word_job_all j where j.wordid > " + startSeq + " AND j.wordid <= "
-				+ (startSeq + step);
+		String sql = "SELECT wordid, word from word_job_all j where j.wordid > "
+				+ startSeq + " AND j.wordid <= " + (startSeq + step);
+		// sql =
+		// "SELECT wordid, word from word_job_all j where word = 'analogy'";
 		System.out.println(sql);
 		if (jobIndex > -1) {
 			// return;
@@ -88,7 +92,8 @@ public class SentenceFinderJob {
 		for (Map<String, Object> map : wordLst) {
 			Integer wordid = (Integer) map.get("wordid");
 			String word = (String) map.get("word");
-			System.err.println("job" + jobIndex + " find seq : " + count + ", wordid is :" + wordid);
+			System.err.println("job" + jobIndex + " find seq : " + count
+					+ ", wordid is :" + wordid);
 			System.out.println(word + ", start time is : " + new Date());
 			long start = System.currentTimeMillis();
 			handleWord(conn, wordid, word);
@@ -100,7 +105,8 @@ public class SentenceFinderJob {
 	}
 
 	private static void handleWord(Connection conn, Integer wordid, String word)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
 		String sql = "select * from langeasy.sentence s where s.type = 'orig' and s.text != '' and "
 				+ "s.text REGEXP concat( '[[:<:]]', '" + word + "', '[[:>:]]')";
 		Statement st = conn.createStatement();
@@ -128,15 +134,17 @@ public class SentenceFinderJob {
 		insertSentence(conn, sentenceLst);
 	}
 
-	private static Integer insertSentence(Connection conn, List<Map<String, Object>> sentenceLst)
-			throws JSONException, SQLException {
-		String insertSql = "INSERT INTO vocabulary_audio (wordid, word, sentenceid, sentence) VALUES (?, ?, ?, ?)";
+	private static Integer insertSentence(Connection conn,
+			List<Map<String, Object>> sentenceLst) throws JSONException,
+			SQLException {
+		String insertSql = "INSERT INTO vocabulary_audio (wordid, word, sentenceid, sentence, ctime) VALUES (?, ?, ?, ?, ?)";
 		PreparedStatement insPs = conn.prepareStatement(insertSql);
 		for (Map<String, Object> wordMap : sentenceLst) {
 			insPs.setInt(1, (int) wordMap.get("wordid"));
 			insPs.setString(2, (String) wordMap.get("word"));
 			insPs.setInt(3, (int) wordMap.get("sentenceid"));
 			insPs.setString(4, (String) wordMap.get("sentence"));
+			insPs.setTimestamp(5, new Timestamp(new Date().getTime()));
 			insPs.addBatch();
 		}
 		try {

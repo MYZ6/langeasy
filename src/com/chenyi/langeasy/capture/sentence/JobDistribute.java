@@ -25,7 +25,7 @@ public class JobDistribute {
 	}
 
 	private static void createJob(Connection conn, int jobIndex) throws Exception {
-		String sql = "create table job" + jobIndex + " like job2";
+		String sql = "create table test.job" + jobIndex + " like test.job2";
 		Statement st = conn.createStatement();
 		int rs = st.executeUpdate(sql);
 		System.out.println(rs);

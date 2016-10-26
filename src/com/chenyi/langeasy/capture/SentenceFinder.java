@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,8 @@ import java.util.Map;
 import org.json.JSONException;
 
 public class SentenceFinder {
-	public static void main(String[] args) throws IOException, JSONException, SQLException {
+	public static void main(String[] args) throws IOException, JSONException,
+			SQLException {
 		Connection conn = CaptureUtil.getConnection();
 		listWord(conn);
 		CaptureUtil.closeConnection(conn);
@@ -25,9 +28,12 @@ public class SentenceFinder {
 	private static List<Map<String, Object>> sentenceLst = new ArrayList<>();
 
 	private static List<Map<String, String>> listWord(Connection conn)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
 		String sql = "SELECT v.id, v.word from vocabulary v left join vocabulary_audio r on r.wordid = v.id "
 				+ "where r.wordid is null group by v.id";
+		sql = "SELECT v.id, s.word, s.wordid, COUNT(*) FROM langeasy.vocabulary_audio s INNER JOIN vocabulary v ON v.id = s.wordid "
+				+ "where 1=1 and v.word = 'covetous' GROUP BY s.word HAVING COUNT(*)<6 ORDER BY 4 DESC, word limit 1";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		List<Map<String, Object>> wordLst = new ArrayList<>();
@@ -54,14 +60,17 @@ public class SentenceFinder {
 			}
 			count++;
 		}
+		System.out.println(sentenceLst.size());
+		insertSentence(conn);
 
 		return null;
 	}
 
 	private static void handleWord(Connection conn, Integer wordid, String word)
-			throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "select * from langeasy.sentence s where s.text REGEXP concat( '[[:<:]]', '" + word
-				+ "', '[[:>:]]')";
+			throws JSONException, SQLException, FileNotFoundException,
+			IOException {
+		String sql = "select * from langeasy.sentence s where s.type = 'orig' and s.text != '' and "
+				+ "s.text REGEXP concat( '[[:<:]]', '" + word + "', '[[:>:]]')";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		while (rs.next()) {
@@ -78,19 +87,22 @@ public class SentenceFinder {
 			System.out.println(word);
 			System.out.println(sentenceid);
 			System.out.println(text);
+			// break;
 		}
 		rs.close();
 		st.close();
 	}
 
-	private static Integer insertSentence(Connection conn) throws JSONException, SQLException {
-		String insertSql = "INSERT INTO vocabulary_audio (wordid, word, sentenceid, sentence) VALUES (?, ?, ?, ?)";
+	private static Integer insertSentence(Connection conn)
+			throws JSONException, SQLException {
+		String insertSql = "INSERT INTO vocabulary_audio (wordid, word, sentenceid, sentence, ctime) VALUES (?, ?, ?, ?, ?)";
 		PreparedStatement insPs = conn.prepareStatement(insertSql);
 		for (Map<String, Object> wordMap : sentenceLst) {
 			insPs.setInt(1, (int) wordMap.get("wordid"));
 			insPs.setString(2, (String) wordMap.get("word"));
 			insPs.setInt(3, (int) wordMap.get("sentenceid"));
 			insPs.setString(4, (String) wordMap.get("sentence"));
+			insPs.setTimestamp(5, new Timestamp(new Date().getTime()));
 			insPs.addBatch();
 		}
 		try {

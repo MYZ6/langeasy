@@ -19,7 +19,7 @@ public class FfmpegVolumeNormalize {
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("start time is : " + new Date());
-		//		test();
+		test();
 
 		// normalize(1, 29.2, new File("E:/langeasy/sentence/7681.mp3"));
 		// try {
@@ -30,11 +30,14 @@ public class FfmpegVolumeNormalize {
 		// System.out.println(arr);
 	}
 
+	static String srcDir = "E:/langeasy/sentence2/";
+	String destDir = "E:/langeasy/sentence2_normalize/";
+
 	public static void test() throws IOException {
 		int count = 0;
 
 		FfmpegVolumeNormalize manager = new FfmpegVolumeNormalize();
-		File bookFile = new File("E:\\dB.json");
+		File bookFile = new File("E:/langeasy/sentence2-db.json");
 		JSONArray arr = null;
 		try {
 			String sResult = IOUtils.toString(new FileInputStream(bookFile), "utf-8");
@@ -48,21 +51,32 @@ public class FfmpegVolumeNormalize {
 			JSONObject sentence = arr.getJSONObject(i);
 
 			count++;
-			if (count % 500 != 0) {
+			if (count % 500 == 0) {
+				// try {
+				// // Thread.sleep(30000);
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
 				// continue;
 			}
 
 			String filename = sentence.getString("sentence");
+			if (!sentence.has("mean_volume2")) {
+				System.out.println(filename);
+			}
 			double mean_volume2 = sentence.getDouble("mean_volume2");
 			if (mean_volume2 > 26 || mean_volume2 < 24) {
-				Job job = manager.new Job(count, mean_volume2, new File("E:/langeasy/sentence/" + filename));
-				job.start();
+				// Job job = manager.new Job(count, mean_volume2, new
+				// File(srcDir + filename));
+				// job.start();
+			} else {
+				System.out.println(sentence);
 			}
 
 			System.out.println("find seq : " + count);
-			// if (count > 200) {
-			// break;
-			// }
+			if (count > 10) {
+				// break;
+			}
 		}
 
 	}
@@ -112,15 +126,15 @@ public class FfmpegVolumeNormalize {
 				String result = "";
 				try {
 					while ((line = input.readLine()) != null) {
-						//						System.out.println(line);
+						// System.out.println(line);
 						result += line;
 					}
 					long end = System.currentTimeMillis();
-					// System.out.println(inputFilePath + ", consuming seconds : " + (end - start));
+					System.out.println(filename + ", consuming seconds : " + (end - start));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				//				System.out.println(result);
+				// System.out.println(result);
 			}
 		}.start();
 	}
@@ -139,7 +153,10 @@ public class FfmpegVolumeNormalize {
 
 		public void run() {
 			try {
-				String destFilePath = "E:/langeasy/sentence_normalize/" + srcFile.getName();
+				String destFilePath = destDir + srcFile.getName();
+				if (new File(destFilePath).exists()) {
+					return;
+				}
 				normalize(jobIndex, mean_volume2, srcFile, destFilePath);
 			} catch (IOException e) {
 				e.printStackTrace();
