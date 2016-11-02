@@ -18,6 +18,8 @@ package com.chenyi.langeasy.lucene;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -31,6 +33,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
+import org.json.JSONArray;
 
 /** Simple command-line based search demo. */
 public class SearchTest {
@@ -81,18 +84,24 @@ public class SearchTest {
 				"suffuse", "sunder", "suppliant", "surreptitious", "torpid", "traduce", "tranquillity",
 				"transmutation", "transpire", "troth", "truncate", "tumid", "turpitude", "unfeigned", "unwonted",
 				"usury", "winsome", "zealot", "zephyr" };
+		List<String> unmatchList = new ArrayList<>();
 		for (String word : wordLst) {
-			search(searcher, parser, word);
+			boolean result = search(searcher, parser, word);
+			if (!result) {
+				unmatchList.add(word);
+			}
 		}
+		reader.close();
 		System.out.println("findWTotal: " + findWTotal);
 		System.out.println("findSTotal: " + findSTotal);
-		reader.close();
+		System.out.println(new JSONArray(unmatchList).toString(3));
+		System.out.println(unmatchList.size());
 	}
 
 	static int findWTotal = 0;
 	static int findSTotal = 0;
 
-	public static void search(IndexSearcher searcher, QueryParser parser, String word) throws ParseException,
+	public static boolean search(IndexSearcher searcher, QueryParser parser, String word) throws ParseException,
 			IOException {
 		Query query = parser.parse(word);
 		System.out.println("Searching for: " + query.toString("contents"));
@@ -105,8 +114,10 @@ public class SearchTest {
 
 		int start = 0;
 		int end = numTotalHits;// Math.min(numTotalHits, hitsPerPage);
+		boolean result = false;
 		if (numTotalHits > 0) {
 			findWTotal++;
+			result = true;
 		}
 		for (int i = start; i < end; i++) {
 			findSTotal++;
@@ -121,7 +132,7 @@ public class SearchTest {
 			} else {
 				System.out.println((i + 1) + ". " + "No path for this document");
 			}
-
 		}
+		return result;
 	}
 }
