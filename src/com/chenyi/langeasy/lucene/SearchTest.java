@@ -96,6 +96,7 @@ public class SearchTest {
 		System.out.println("findSTotal: " + findSTotal);
 		System.out.println(new JSONArray(unmatchList).toString(3));
 		System.out.println(unmatchList.size());
+		System.out.println();
 	}
 
 	static int findWTotal = 0;
