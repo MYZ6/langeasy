@@ -74,7 +74,7 @@ public class StoryListCapture {
 				// return;
 			}
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 200; i++) {
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {

@@ -20,13 +20,15 @@ public class ThisAmericanLifeTranscript {
 	static List<Integer> downloadLst = new ArrayList<>();
 
 	public static void main(String[] args) throws Exception {
-		for (int i = 1; i < 600; i++) {
+		for (int i = 1; i <= 600; i++) {
 			downloadLst.add(i);
 		}
 
+		int total = 600;
 		step = 30;
+		int count = total / step;
 		ThisAmericanLifeTranscript downloader = new ThisAmericanLifeTranscript();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 19; i < count; i++) {
 			Job job = downloader.new Job(i);
 			job.start();
 			if (i > 2) {
@@ -64,6 +66,9 @@ public class ThisAmericanLifeTranscript {
 					parseEpisode(httpclient, id);
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+				if (count > 12) {
+					// break;
 				}
 			}
 			try {

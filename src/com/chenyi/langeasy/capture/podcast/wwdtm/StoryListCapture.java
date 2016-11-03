@@ -63,9 +63,10 @@ public class StoryListCapture {
 		}
 
 		jobStatus = new int[count];
-		int start = 19;
+		int start = 0;
+		int end = 19;
 		StoryListCapture downloader = new StoryListCapture();
-		for (int i = start; i < count; i++) {
+		for (int i = start; i < end; i++) {
 			Job job = downloader.new Job(i);
 			jobStatus[i] = 0;
 			job.start();
@@ -73,19 +74,20 @@ public class StoryListCapture {
 				// return;
 			}
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 200; i++) {
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			boolean allFinished = true;
-			for (int j = start; j < count; j++) {
+			for (int j = start; j < end; j++) {
 				if (jobStatus[j] == 0) {
 					allFinished = false;
 					break;
 				}
 			}
+			System.out.println(new JSONArray(jobStatus));
 			if (allFinished) {
 				FileUtils.writeStringToFile(sFile, episodeList.toString(3), StandardCharsets.UTF_8);
 				break;

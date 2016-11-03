@@ -142,7 +142,11 @@ public class EpisodeListCapture {
 
 			String edate = li.select("time").get(0).attr("datetime");
 			String teaser = li.select(".teaser").get(0).text();
-			String slug = li.select(".slug").get(0).text();
+			Elements slugEles = li.select(".slug");
+			String slug = null;
+			if (slugEles.size() > 0) {
+				slug = slugEles.get(0).text();
+			}
 
 			Map<String, String> map = new HashMap<>();
 			map.put("eid", storyId);

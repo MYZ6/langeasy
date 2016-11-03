@@ -25,12 +25,14 @@ public class EpisodeListCapture {
 	private static int yearCount;
 
 	private static String dirPath = "E:/langeasy/lucene/podcast/allthingsconsidered/";
-	private static int startYear = 2006;
-	private static int periodCount = 6;
+	private static int startYear;
+	private static int periodCount;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
-
+		startYear = 2006;
 		yearCount = 10;
+		periodCount = 6;
+
 		dateList = new ArrayList<>();
 		for (int i = yearCount; i >= 0; i--) {
 			int year = startYear + i;
@@ -81,7 +83,7 @@ public class EpisodeListCapture {
 				// return;
 			}
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 200; i++) {
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
