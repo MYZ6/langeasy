@@ -43,8 +43,9 @@ public class CaptureUtil {
 
 	public static Document timeoutRequest(String url) {
 		Document doc = null;
+		String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
 		try {
-			doc = Jsoup.connect(url).get();
+			doc = Jsoup.connect(url).userAgent(userAgent).get();
 		} catch (SocketTimeoutException ex) {
 			System.out.println("url " + url + " read timeout");
 			ex.printStackTrace();
@@ -53,6 +54,10 @@ public class CaptureUtil {
 		} catch (HttpStatusException ex) {
 			if (404 == ex.getStatusCode()) {
 				System.out.println("url " + url + " 404");
+				ex.printStackTrace();
+			}
+			if (403 == ex.getStatusCode()) {
+				System.err.println("url " + url + " 403");
 				ex.printStackTrace();
 			}
 			// throw ex;
@@ -93,13 +98,14 @@ public class CaptureUtil {
 		// if (s != l + i) return "";
 		for (; timestrLength > secondSubLength;) {
 			o = saltIndex(newSalt, timestr, secondSubLength++);
-			r = 5 > o ? o * newSaltLength + saltIndex(newSalt, timestr, secondSubLength)
-					: (o - 5) * newSaltLength * newSaltLength + saltIndex(newSalt, timestr, secondSubLength += 1);
+			r = 5 > o ? o * newSaltLength + saltIndex(newSalt, timestr, secondSubLength) : (o - 5) * newSaltLength
+					* newSaltLength + saltIndex(newSalt, timestr, secondSubLength += 1);
 			char[] chars = Character.toChars(r);
 			codeArr.add(new String(chars));
 			secondSubLength++;
 		}
-		// for (; s > l;) o = c(l++), r = 5 > o ? o * d + c(l) : (o - 5) * d * d + c(l) * d + c(l += 1),
+		// for (; s > l;) o = c(l++), r = 5 > o ? o * d + c(l) : (o - 5) * d * d
+		// + c(l) * d + c(l += 1),
 		// a[a.length] = String.fromCharCode(r), l++;
 		// return a.join("")
 		String decodeTime = StringUtils.join(codeArr, "");
@@ -108,7 +114,8 @@ public class CaptureUtil {
 		String finalTime = timeArr[1];
 		// System.out.println(finalTime);
 		long endTime = System.currentTimeMillis();
-		// System.out.println("decode operate elapsed: " + (endTime - startTime));
+		// System.out.println("decode operate elapsed: " + (endTime -
+		// startTime));
 		return Integer.parseInt(finalTime);
 	}
 
@@ -135,7 +142,8 @@ public class CaptureUtil {
 	// },
 	// d = n.length;
 	// if (s != l + i) return "";
-	// for (; s > l;) o = c(l++), r = 5 > o ? o * d + c(l) : (o - 5) * d * d + c(l) * d + c(l += 1), a[a.length] =
+	// for (; s > l;) o = c(l++), r = 5 > o ? o * d + c(l) : (o - 5) * d * d +
+	// c(l) * d + c(l += 1), a[a.length] =
 	// String.fromCharCode(r), l++;
 	// return a.join("")
 	// },
