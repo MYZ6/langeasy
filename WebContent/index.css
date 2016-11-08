@@ -13,6 +13,24 @@ body {
 	overflow: auto;
 }
 
+.command-zone {
+	float: left;
+	width: 200px;
+	height: 600px;
+	overflow: auto;
+	padding-top: 300px;
+	padding-left: 30px;
+	box-sizing: border-box;
+}
+
+.command-zone input {
+	font-size: 28px;
+	padding: 15px;
+	width: 150px;
+	margin-bottom: 50px;
+	cursor: pointer;
+}
+
 #word-list div {
 	margin: 10px;
 	cursor: pointer;

@@ -39,8 +39,6 @@
 	    <div id="wrapper">
 	      	<h1 id="audio-text">wait what — notorious xx <em>(2009)</em></h1>
 	      	<audio preload id="audio-player"></audio>
-	      
-			<input id="passBtn" type="button" value="Pass" />
 	    </div>
 	    
 		<div id="word-title"></div>
@@ -52,6 +50,11 @@
 		
 		<div id="translate-panel">
 		</div>
+	</div>
+	<div class="command-zone">
+		<input type="button" id="btn-pass" value="Pass" />
+		<br>
+		<input type="button" id="btn-pause" value="Pause" />
 	</div>
 	
 </body>

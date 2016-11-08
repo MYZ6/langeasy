@@ -3,12 +3,14 @@ $(function() {
 
 	initData();
 
-	$('#passBtn').click(doPass);
-
 	initEvent();
 });
 
 function initEvent() {
+	$('#btn-pass').click(doPass);
+	$('#btn-pause').click(function(evt) {
+		audioInstance.playPause();
+	});
 
 	function getSelectionText(e) {
 		var text = '';
