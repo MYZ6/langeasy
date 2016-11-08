@@ -21,13 +21,13 @@ body {
 	float: left;
 	width: 850px;
 	overflow: auto;
-	position: relative;
-	height: 800px;
+	position: relative; height : 800px;
 	margin: 5px;
 	padding: 8px;
 	border: 1px solid blue;
 	margin: 5px;
 	height: 100%;
+/* 	height: 800px; */
 }
 
 #passBtn {
@@ -60,7 +60,7 @@ body {
 	font-size: 18px;
 }
 
-.book-name{
+.book-name {
 	color: #338899;
 	cursor: pointer;
 }
@@ -75,6 +75,13 @@ body {
 
 .audio-item {
 	cursor: pointer;
+}
+
+.audio-item.playing {
+	font-style: italic;
+	font-size: 16px;
+	color: #889933;
+	font-weight: bold;
 }
 
 /*** 
