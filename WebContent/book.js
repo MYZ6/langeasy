@@ -175,7 +175,7 @@ function showWord(wordId) {
 					});
 			function sentenceRender(sentence) {
 				var word = data.word;
-				var startIndex = sentence.indexOf(word);
+				var startIndex = sentence.toLowerCase().indexOf(word);
 				var endIndex = startIndex + word.length;
 				var result = sentence.substr(0, startIndex) + '<span style="color: red; font-weight: bold;">'
 						+ sentence.substr(startIndex, word.length) + '</span>' + sentence.substr(endIndex);
@@ -192,9 +192,10 @@ function showWord(wordId) {
 	});
 }
 {
-	var word = 'abrupt';
-	var sentence = "Mrs Merkel's abrupt abandonment of nuclear power has also brought the two parties' environmental policies closer.";
-	var startIndex = sentence.indexOf(word);
+	var word = 'abstemious';
+	var sentence = "Abstemious bars have also opened in Liverpool and Nottingham, and are planned for"
+			+ " Brighton and Newcastle—two famously high-living towns.";
+	var startIndex = sentence.toLowerCase().indexOf(word);
 	var endIndex = startIndex + word.length;
 	var result = sentence.substr(0, startIndex) + '<span>' + sentence.substr(startIndex, word.length) + '</span>'
 			+ sentence.substr(endIndex);

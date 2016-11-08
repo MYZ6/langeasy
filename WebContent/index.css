@@ -8,7 +8,8 @@ body {
 #word-list {
 	float: left;
 	width: 200px;
-	height: 100%;
+	/* 	height: 100%; */
+	height: 600px;
 	overflow: auto;
 }
 
@@ -20,14 +21,16 @@ body {
 #word-content {
 	float: left;
 	width: 850px;
+	height: 600px;
 	overflow: auto;
-	position: relative; height : 800px;
+	position: relative;
 	margin: 5px;
 	padding: 8px;
+	padding-bottom: 50px;
+	box-sizing: border-box;
 	border: 1px solid blue;
 	margin: 5px;
-	height: 100%;
-/* 	height: 800px; */
+	/* 	height: 100%; */
 }
 
 #passBtn {
