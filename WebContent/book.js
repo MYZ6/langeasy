@@ -48,6 +48,7 @@ function initEvent() {
 	}).dblclick(function(e) {
 		$(this).data('double', 2);
 		doubleClick.call(this, e);
+		e.preventDefault();
 	});
 }
 
@@ -160,10 +161,9 @@ function showWord(wordId) {
 						var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
 						$sentence = $('<div class="aexample"><div>' + item.booktype
 								+ '</div><div class="book-name" bookid="' + item.bookid + '">' + item.bookname
-								+ '</div><div style="color: blue;">' + item.coursename
-								+ '</div><div class="audio-item" data-src="' + _url + '"><span>' + (i + 1)
-								+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence) + '<div>' + item.chinese
-								+ '</div></div>');
+								+ '</div><div style="color: blue;">' + item.coursename + '</div><div><span>' + (i + 1)
+								+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence)
+								+ '</div><div class="audio-item" data-src="' + _url + '">' + item.chinese + '</div>');
 
 						// $sentence.append('<audio controls
 						// src="' + _url +
