@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 body {
 	font-size: 15px;
 	height: 600px;
@@ -19,6 +21,7 @@ body {
 	float: left;
 	width: 850px;
 	overflow: auto;
+	position: relative;
 	height: 800px;
 	margin: 5px;
 	padding: 8px;
@@ -26,7 +29,8 @@ body {
 	margin: 5px;
 	height: 100%;
 }
-#passBtn{
+
+#passBtn {
 	font-size: 20px;
 }
 
@@ -141,6 +145,16 @@ li.playing:before {
 	color: #000;
 	font-size: 13px;
 	text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+}
+
+#translate-panel {
+	position: absolute;
+	left: -300px;
+	width: 100px;
+	height: 30px;
+	border: 1px solid green;
+	background: white;
+	padding: 8px;
 }
 
 #shortcuts {

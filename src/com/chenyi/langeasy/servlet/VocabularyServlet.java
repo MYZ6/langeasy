@@ -35,8 +35,7 @@ public class VocabularyServlet extends HttpServlet {
 		super();
 	}
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String type = request.getParameter("t");
 		Connection conn = CaptureUtil.getConnection();
 		try {
@@ -54,8 +53,7 @@ public class VocabularyServlet extends HttpServlet {
 				outJS(response, word.toString());
 			} else if ("m".equals(type)) {
 				String sentenceid = request.getParameter("id");
-				String filepath = "e:/langeasy/sentence_normalize/"
-						+ sentenceid + ".mp3";
+				String filepath = "e:/langeasy/sentence_normalize/" + sentenceid + ".mp3";
 				outMp3(request, response, filepath);
 			} else if ("p".equals(type)) {
 				String path = request.getParameter("path");
@@ -74,6 +72,11 @@ public class VocabularyServlet extends HttpServlet {
 			} else if ("listModifiedSentence".equals(type)) {
 				JSONArray arr = Sentence.listModifiedSentence();
 				outJS(response, arr.toString());
+			} else if ("translate".equals(type)) {
+				String word = request.getParameter("word");
+				JSONObject result = new JSONObject();
+				result.put("chinese", Vocabulary.translate(word));
+				outJS(response, result.toString());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -88,8 +91,8 @@ public class VocabularyServlet extends HttpServlet {
 		}
 	}
 
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 		doGet(request, response);
 	}
 
@@ -105,17 +108,14 @@ public class VocabularyServlet extends HttpServlet {
 		}
 	}
 
-	protected void outMp3(HttpServletRequest request,
-			HttpServletResponse response, String filepath) throws IOException {
+	protected void outMp3(HttpServletRequest request, HttpServletResponse response, String filepath) throws IOException {
 		InputStream fis = new FileInputStream(filepath);
 		String mimeType = request.getServletContext().getMimeType(filepath);
-		response.setContentType(mimeType != null ? mimeType
-				: "application/octet-stream");
+		response.setContentType(mimeType != null ? mimeType : "application/octet-stream");
 
 		File file = new File(filepath);
 		response.setContentLength((int) file.length());
-		response.setHeader("Content-Disposition", "attachment; filename=\""
-				+ file.getName() + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
 		ServletOutputStream sos = response.getOutputStream();
 		byte[] bufferData = new byte[1024];

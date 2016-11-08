@@ -2,6 +2,7 @@ package com.chenyi.langeasy.servlet;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,14 +11,20 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Vocabulary {
 
-	static JSONArray listWord(Connection conn) throws JSONException,
-			SQLException, FileNotFoundException, IOException {
+	static JSONArray listWord(Connection conn) throws JSONException, SQLException, FileNotFoundException, IOException {
 		String sql = "SELECT id, word, pron from vocabulary limit 30";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
@@ -38,8 +45,7 @@ public class Vocabulary {
 		return arr;
 	}
 
-	static JSONArray listAword(Connection conn) throws JSONException,
-			SQLException, FileNotFoundException, IOException {
+	static JSONArray listAword(Connection conn) throws JSONException, SQLException, FileNotFoundException, IOException {
 		String sql = "SELECT a.wordid, a.word, v.pass from vocabulary_audio a inner join vocabulary v on v.id = a.wordid group by a.wordid limit 20000";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
@@ -58,8 +64,7 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONObject word(Connection conn, Integer wordid)
-			throws SQLException {
+	public static JSONObject word(Connection conn, Integer wordid) throws SQLException {
 		String sql = "SELECT word, pron, mp3path, oggpath from vocabulary where id = ?";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -86,8 +91,7 @@ public class Vocabulary {
 		return wordMap;
 	}
 
-	public static JSONArray listMeaning(Connection conn, Integer wordid)
-			throws SQLException {
+	public static JSONArray listMeaning(Connection conn, Integer wordid) throws SQLException {
 		String sql = "SELECT id, type, meaning from meaning where wordid = ? order by weight";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -115,8 +119,7 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONArray listExample(Connection conn, Integer meaningid)
-			throws SQLException {
+	public static JSONArray listExample(Connection conn, Integer meaningid) throws SQLException {
 		String sql = "SELECT id, sentence from example_sentence where meaningid = ? order by weight";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, meaningid);
@@ -137,8 +140,7 @@ public class Vocabulary {
 		return arr;
 	}
 
-	public static JSONArray listAudioExample(Connection conn, Integer wordid)
-			throws SQLException {
+	public static JSONArray listAudioExample(Connection conn, Integer wordid) throws SQLException {
 		String sql = "SELECT sentenceid, sentence from vocabulary_audio where wordid = ?";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
@@ -171,5 +173,45 @@ public class Vocabulary {
 		updatePs.close();
 
 		return 0;
+	}
+
+	public static String translate(String word) throws SQLException, ClientProtocolException, IOException {
+		String url = "http://fanyi.baidu.com/transapi?from=en&type=1&domain=all$source=txt&to=zh&query=" + word;
+		System.out.println(url);
+
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost(url);
+
+		CloseableHttpResponse response = httpclient.execute(httppost);
+		// Get hold of the response entity
+		HttpEntity entity = response.getEntity();
+
+		byte[] result = null;
+		// If the response does not enclose an entity, there is no need
+		// to bother about connection release
+		if (entity != null) {
+			InputStream instream = entity.getContent();
+			result = IOUtils.toByteArray(instream);
+			instream.close();
+		}
+		response.close();
+
+		String sResult = new String(result, "utf-8");
+		// sResult = StringEscapeUtils.unescapeJava(sResult);
+		// System.out.println(sResult);
+		JSONObject json = null;
+		try {
+			json = new JSONObject(sResult);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// System.out.println(json);
+		JSONArray data = json.getJSONArray("data");
+		JSONObject data1 = data.getJSONObject(0);
+		String dst = data1.getString("dst");
+		System.out.println(dst);
+		System.out.println(data);
+
+		return dst;
 	}
 }

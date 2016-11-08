@@ -46,6 +46,9 @@
 		
 		<h3>Audio Examples</h3>
 		<div id="audio-example"></div>
+		
+		<div id="translate-panel">
+		</div>
 	</div>
 	
 </body>

@@ -4,7 +4,48 @@ $(function() {
 	initData();
 
 	$('#passBtn').click(doPass);
+
+	initEvent();
 });
+
+function initEvent() {
+
+	function getSelectionText(e) {
+		var text = '';
+		if (window.getSelection) {
+			text = window.getSelection().toString();
+		} else if (document.selection && document.selection.type != "Control") {
+			text = document.selection.createRange().text;
+		}
+		text = text.trim();
+		if (text != '') {
+			translate(text, e.pageX - 180, e.pageY + 5 + $('#word-content').scrollTop());
+		}
+	}
+	function singleClick(e) {
+		getSelectionText(e);
+	}
+
+	function doubleClick(e) {
+		// do something, "this" will be the DOM element
+		getSelectionText(e);
+	}
+
+	$('#meaning, #audio-example').click(function(e) {
+		var that = this;
+		setTimeout(function() {
+			var dblclick = parseInt($(that).data('double'), 10);
+			if (dblclick > 0) {
+				$(that).data('double', dblclick - 1);
+			} else {
+				singleClick.call(that, e);
+			}
+		}, 300);
+	}).dblclick(function(e) {
+		$(this).data('double', 2);
+		doubleClick.call(this, e);
+	});
+}
 
 function doPass(evt) {
 	$.ajax({
@@ -22,6 +63,26 @@ function doPass(evt) {
 	});
 }
 
+function translate(word, x, y) {
+	$.ajax({
+		type : "GET",
+		url : root + '/api?t=translate',
+		data : {
+			"word" : word
+		},
+		error : function() {
+			console.error("query failed");
+		},
+		success : function(data) {
+			console.log(data);
+			$('#translate-panel').html(data.chinese).css({
+				"left" : x,
+				"top" : y
+			});
+		}
+	});
+}
+
 function initData() {
 	if (type == '') {
 		type = 'list';
@@ -34,21 +95,17 @@ function initData() {
 			console.error("query failed");
 		},
 		success : function(data) {
-			console.log(data);
-			$(data)
-					.each(
-							function(i, word) {
-								$word = $('<div id="word' + word.wordid
-										+ '" class="word-item">' + word.word
-										+ '</div>');
-								$word.click(function() {
-									// var _url = root + '/word.jsp?id=' +
-									// word.wordid;
-									// window.open(_url, '_blank');
-									showWord(word.wordid);
-								});
-								$('#word-list').append($word);
-							});
+			// console.log(data);
+			$(data).each(function(i, word) {
+				$word = $('<div id="word' + word.wordid + '" class="word-item">' + word.word + '</div>');
+				$word.click(function() {
+					// var _url = root + '/word.jsp?id=' +
+					// word.wordid;
+					// window.open(_url, '_blank');
+					showWord(word.wordid);
+				});
+				$('#word-list').append($word);
+			});
 			$('.word-item').eq(0).trigger('click');
 		}
 	});
@@ -57,75 +114,54 @@ function initData() {
 var currentWordId = null;
 function showWord(wordId) {
 	currentWordId = wordId;
-	$
-			.ajax({
-				type : "GET",
-				url : root + '/api?t=word&id=' + wordId,
-				async : false,
-				error : function() {
-					console.error("query failed");
-				},
-				success : function(data) {
-					$('#word-title, #pron, #meaning, #audio-example').empty();
+	$.ajax({
+		type : "GET",
+		url : root + '/api?t=word&id=' + wordId,
+		async : false,
+		error : function() {
+			console.error("query failed");
+		},
+		success : function(data) {
+			$('#word-title, #pron, #meaning, #audio-example').empty();
 
-					console.log(data);
-					$('title').html("" + data.word);
-					$('#word-title').html(data.word);
-					$('#pron').html(data.pron);
-					var pronUrl = root + '/api?t=p&path=' + data.oggpath;
-					$('#pron').append(
-							'<audio controls src="' + pronUrl
-									+ '">sdfd</audio>');
-					$('#btn-listen').click(function() {
-						window.open(data.oggpath);
+			console.log(data);
+			$('title').html("" + data.word);
+			$('#word-title').html(data.word);
+			$('#pron').html(data.pron);
+			var pronUrl = root + '/api?t=p&path=' + data.oggpath;
+			$('#pron').append('<audio controls src="' + pronUrl + '">sdfd</audio>');
+			$('#btn-listen').click(function() {
+				window.open(data.oggpath);
+			});
+
+			$(data.meaning).each(
+					function(i, item) {
+						$('#meaning').append(
+								'<div class="meaning-type">' + item.type + '</div><div class="meaning-content">'
+										+ item.meaning + '</div>');
+						$(item.example).each(function(i, item) {
+							$('#meaning').append('<div class="example">' + item.sentence + '</div>');
+						});
 					});
 
-					$(data.meaning)
-							.each(
-									function(i, item) {
-										$('#meaning')
-												.append(
-														'<div class="meaning-type">'
-																+ item.type
-																+ '</div><div class="meaning-content">'
-																+ item.meaning
-																+ '</div>');
-										$(item.example)
-												.each(
-														function(i, item) {
-															$('#meaning')
-																	.append(
-																			'<div class="example">'
-																					+ item.sentence
-																					+ '</div>');
-														});
-									});
+			$(data.aexample).each(
+					function(i, item) {
+						var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
+						$sentence = $('<div class="aexample audio-item" data-src="' + _url + '"><span>'
+								+ item.sentenceid + '</span>&nbsp;&nbsp;' + item.sentence + '</div>');
 
-					$(data.aexample)
-							.each(
-									function(i, item) {
-										var _url = root + '/api?t=m&id='
-												+ item.sentenceid + "&ts="
-												+ new Date().getTime();
-										$sentence = $('<div class="aexample audio-item" data-src="'
-												+ _url
-												+ '"><span>'
-												+ item.sentenceid
-												+ '</span>&nbsp;&nbsp;'
-												+ item.sentence + '</div>');
+						// $sentence.append('<audio controls
+						// src="' + _url +
+						// '">sdfd</audio>');
+						// $sentence.click(function() {
+						// window.open(_url);
+						// });
+						$('#audio-example').append($sentence);
+					});
 
-										// $sentence.append('<audio controls
-										// src="' + _url +
-										// '">sdfd</audio>');
-										// $sentence.click(function() {
-										// window.open(_url);
-										// });
-										$('#audio-example').append($sentence);
-									});
-
-					resetPlayer();
-				}
-			});
+			resetPlayer();
+		}
+	});
 }
 
 var audioInstance = null;
