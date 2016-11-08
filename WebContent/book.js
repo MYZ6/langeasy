@@ -186,7 +186,7 @@ function showWord(wordId) {
 			}
 
 			$('.book-name span').click(function(evt) {
-				var bookid = $(this).attr('bookid');
+				var bookid = $(this).parent().attr('bookid');
 				var url = root + '/book.jsp?id=' + bookid;
 				window.open(url);
 			});
