@@ -207,9 +207,10 @@ function initPlayerlist() {
 	// Setup the player to autoplay the next track
 	audioInstance = audiojs.create(document.getElementById('audio-player'), {
 		trackEnded : function() {
-			var next = $('.audio-item.playing').next();
-			if (!next.length)
+			var next = $('.audio-item.playing').parent().next().find('.audio-item');
+			if (next.length == 0) {
 				next = $('.audio-item').first();
+			}
 			loadAudio($(next));
 		}
 	});
@@ -244,7 +245,8 @@ function initPlayerlist() {
 function loadAudio($target) {
 	audioInstance.load($target.attr('data-src'));
 	$('#audio-text').html($target.html());
-	$target.addClass('playing').siblings().removeClass('playing');
+	$('.audio-item.playing').removeClass('playing');
+	$target.addClass('playing');
 	audioInstance.play();
 }
 
