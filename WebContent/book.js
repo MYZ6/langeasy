@@ -162,10 +162,11 @@ function showWord(wordId) {
 					function(i, item) {
 						var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
 						$sentence = $('<div class="aexample"><div>' + item.booktype
-								+ '</div><div class="book-name" bookid="' + item.bookid + '">' + item.bookname
-								+ '</div><div style="color: blue;">' + item.coursename + '</div><div><span>' + (i + 1)
-								+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence)
-								+ '</div><div class="audio-item" data-src="' + _url + '">' + item.chinese + '</div>');
+								+ '</div><div class="book-name" bookid="' + item.bookid + '"><span>' + item.bookname
+								+ '</span></div><div style="color: blue;">' + item.coursename + '</div><div><span>'
+								+ (i + 1) + '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence)
+								+ '</div><div class="audio-item" data-src="' + _url + '"><span>' + item.chinese
+								+ '</span></div>');
 
 						// $sentence.append('<audio controls
 						// src="' + _url +
@@ -184,7 +185,7 @@ function showWord(wordId) {
 				return result;
 			}
 
-			$('.book-name').click(function(evt) {
+			$('.book-name span').click(function(evt) {
 				var bookid = $(this).attr('bookid');
 				var url = root + '/book.jsp?id=' + bookid;
 				window.open(url);
@@ -260,10 +261,10 @@ function resetPlayer() {
 		loadAudio($('.audio-item').eq(0));
 
 		// Load in a track on click
-		$('.audio-item').click(function(e) {
+		$('.audio-item span').click(function(e) {
 			e.preventDefault();
 
-			loadAudio($(this));
+			loadAudio($(this).parent());
 		});
 	}
 }

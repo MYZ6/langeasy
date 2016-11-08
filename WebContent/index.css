@@ -81,7 +81,7 @@ body {
 	font-size: 18px;
 }
 
-.book-name {
+.book-name span {
 	color: #338899;
 	cursor: pointer;
 }
@@ -94,7 +94,7 @@ body {
 	margin: 15px;
 }
 
-.audio-item {
+.audio-item span{
 	cursor: pointer;
 }
 
