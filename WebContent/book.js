@@ -89,18 +89,23 @@ function translate(word, x, y) {
 
 function initData() {
 	if (type == '') {
-		type = 'list';
+		type = 'book';
 	}
 	$.ajax({
 		type : "GET",
 		url : root + '/api?t=' + type,
+		data : {
+			'id' : g_bookid
+		},
 		async : false,
 		error : function() {
 			console.error("query failed");
 		},
 		success : function(data) {
+			$('#booktype').html(data.booktype);
+			$('#bookname').html(data.bookname);
 			// console.log(data);
-			$(data).each(
+			$(data.bookLst).each(
 					function(i, word) {
 						$word = $('<div id="word' + word.wordid + '" class="word-item"><span>' + (i + 1)
 								+ '/</span><span>' + word.wordid + '&nbsp;</span>' + word.word + '</div>');
@@ -131,7 +136,7 @@ function showWord(wordId) {
 			$('#word-title, #pron, #meaning, #audio-example').empty();
 
 			console.log(data);
-			$('title').html("" + data.word);
+			$('title').html(data.word + "-" + $('#bookname').html());
 			$('#word-title').html(data.word);
 			$('#pron').html(data.pron);
 			var pronUrl = root + '/api?t=p&id=' + data.wordid;

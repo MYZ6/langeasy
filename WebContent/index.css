@@ -7,7 +7,7 @@ body {
 
 #word-list {
 	float: left;
-	width: 150px;
+	width: 200px;
 	height: 100%;
 	overflow: auto;
 }
@@ -58,6 +58,11 @@ body {
 .meaning-content {
 	margin: 15px;
 	font-size: 18px;
+}
+
+.book-name{
+	color: #338899;
+	cursor: pointer;
 }
 
 .example {

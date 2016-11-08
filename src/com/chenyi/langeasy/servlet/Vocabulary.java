@@ -46,7 +46,8 @@ public class Vocabulary {
 	}
 
 	static JSONArray listAword(Connection conn) throws JSONException, SQLException, FileNotFoundException, IOException {
-		String sql = "SELECT a.wordid, a.word, v.pass from vocabulary_audio a inner join vocabulary v on v.id = a.wordid group by a.wordid limit 20000";
+		String sql = "SELECT a.wordid, a.word, v.pass from vocabulary_audio a inner join vocabulary v on v.id = a.wordid "
+				+ "WHERE COALESCE(v.pass, 0) != 1 group by a.wordid limit 20000";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		JSONArray arr = new JSONArray();
@@ -62,6 +63,49 @@ public class Vocabulary {
 		st.close();
 
 		return arr;
+	}
+
+	static JSONArray listByBook(Connection conn, String bookid) throws SQLException {
+		String sql = "SELECT a.wordid, a.word, v.pass from vocabulary_audio a inner join vocabulary v on v.id = a.wordid "
+				+ "INNER JOIN langeasy.sentence s ON s.id = a.sentenceid "
+				+ "INNER JOIN langeasy.course c ON c.courseid = s.courseid "
+				+ "INNER JOIN langeasy.book b ON b.bookid = c.bookid "
+				+ "WHERE b.bookid = ? and COALESCE(v.pass, 0) != 1 group by a.wordid limit 20000";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setString(1, bookid);
+		ResultSet rs = st.executeQuery();
+		JSONArray arr = new JSONArray();
+		while (rs.next()) {
+			Integer wordid = rs.getInt("wordid");
+			String word = rs.getString("word");
+			JSONObject wordMap = new JSONObject();
+			wordMap.put("wordid", wordid);
+			wordMap.put("word", word);
+			arr.put(wordMap);
+		}
+		rs.close();
+		st.close();
+
+		return arr;
+	}
+
+	public static JSONObject book(Connection conn, String bookid) throws SQLException {
+		String sql = "SELECT bookname, booktype from book where bookid = ?";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setString(1, bookid);
+		ResultSet rs = st.executeQuery();
+		JSONObject bookMap = new JSONObject();
+		while (rs.next()) {
+			String bookname = rs.getString("bookname");
+			String booktype = rs.getString("booktype");
+			bookMap.put("bookname", bookname);
+			bookMap.put("booktype", booktype);
+		}
+		rs.close();
+		st.close();
+
+		bookMap.put("bookLst", listByBook(conn, bookid));
+		return bookMap;
 	}
 
 	public static JSONObject word(Connection conn, Integer wordid) throws SQLException {
@@ -141,7 +185,12 @@ public class Vocabulary {
 	}
 
 	public static JSONArray listAudioExample(Connection conn, Integer wordid) throws SQLException {
-		String sql = "SELECT sentenceid, sentence from vocabulary_audio where wordid = ?";
+		String sql = "SELECT a.sentenceid, a.sentence, a.chinese, "
+				+ "b.bookid, b.bookname, b.booktype, c.courseid, c.name AS coursename " + "from vocabulary_audio a "
+				+ "INNER JOIN langeasy.sentence s ON s.id = a.sentenceid "
+				+ "INNER JOIN langeasy.course c ON c.courseid = s.courseid "
+				+ "INNER JOIN langeasy.book b ON b.bookid = c.bookid " + " where a.wordid = ?";
+		System.out.println(sql);
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, wordid);
 		ResultSet rs = st.executeQuery();
@@ -149,10 +198,22 @@ public class Vocabulary {
 		while (rs.next()) {
 			Integer sentenceid = rs.getInt("sentenceid");
 			String sentence = rs.getString("sentence");
+			String chinese = rs.getString("chinese");
+			String bookid = rs.getString("bookid");
+			String bookname = rs.getString("bookname");
+			String booktype = rs.getString("booktype");
+			String courseid = rs.getString("courseid");
+			String coursename = rs.getString("coursename");
 
 			JSONObject map = new JSONObject();
 			map.put("sentenceid", sentenceid);
 			map.put("sentence", sentence);
+			map.put("chinese", chinese);
+			map.put("bookid", bookid);
+			map.put("bookname", bookname);
+			map.put("booktype", booktype);
+			map.put("courseid", courseid);
+			map.put("coursename", coursename);
 			arr.put(map);
 		}
 		rs.close();
@@ -176,6 +237,7 @@ public class Vocabulary {
 	}
 
 	public static String translate(String word) throws SQLException, ClientProtocolException, IOException {
+		// word = URLEncoder.encode(word, "UTF-8");
 		String url = "http://fanyi.baidu.com/transapi?from=en&type=1&domain=all$source=txt&to=zh&query=" + word;
 		System.out.println(url);
 

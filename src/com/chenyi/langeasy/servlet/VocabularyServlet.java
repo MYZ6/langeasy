@@ -46,6 +46,10 @@ public class VocabularyServlet extends HttpServlet {
 			} else if ("lista".equals(type)) {
 				JSONArray arr = Vocabulary.listAword(conn);
 				outJS(response, arr.toString());
+			} else if ("book".equals(type)) {
+				String bookid = request.getParameter("id");
+				JSONObject book = Vocabulary.book(conn, bookid);
+				outJS(response, book.toString());
 			} else if ("word".equals(type)) {
 				String wordid = request.getParameter("id");
 				JSONObject word = null;
@@ -56,8 +60,9 @@ public class VocabularyServlet extends HttpServlet {
 				String filepath = "e:/langeasy/sentence_normalize/" + sentenceid + ".mp3";
 				outMp3(request, response, filepath);
 			} else if ("p".equals(type)) {
+				String wordid = request.getParameter("id");
 				String path = request.getParameter("path");
-				String filepath = "e:/langeasy/pronunciation-normalize/" + path;
+				String filepath = "e:/langeasy/pronunciation-normalize/" + wordid + ".ogg";
 				outMp3(request, response, filepath);
 			} else if ("pass".equals(type)) {
 				String wordid = request.getParameter("wordid");
