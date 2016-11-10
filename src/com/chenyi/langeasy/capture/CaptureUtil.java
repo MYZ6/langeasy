@@ -67,6 +67,37 @@ public class CaptureUtil {
 		return doc;
 	}
 
+	public static Document timeoutRequest(String url, int interval) {
+		Document doc = null;
+		String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
+		try {
+			doc = Jsoup.connect(url).userAgent(userAgent).get();
+		} catch (SocketTimeoutException ex) {
+			System.out.println("url " + url + " read timeout");
+			ex.printStackTrace();
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			doc = timeoutRequest(url, interval);// try again recursively
+			// throw ex;
+		} catch (HttpStatusException ex) {
+			if (404 == ex.getStatusCode()) {
+				System.out.println("url " + url + " 404");
+				ex.printStackTrace();
+			}
+			if (403 == ex.getStatusCode()) {
+				System.err.println("url " + url + " 403");
+				ex.printStackTrace();
+			}
+			// throw ex;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return doc;
+	}
+
 	public static Integer decodeTime(String timestr) {
 		long startTime = System.currentTimeMillis();
 		String salt = "8ABC7DLO5MN6Z9EFGd";
