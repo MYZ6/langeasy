@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -96,6 +100,39 @@ public class CaptureUtil {
 			e.printStackTrace();
 		}
 		return doc;
+	}
+
+	public static HttpResponse timeoutRequest(CloseableHttpClient httpclient, HttpGet httpget, int interval,
+			int retryTime) {
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(httpget);
+		} catch (ClientProtocolException ex) {
+			ex.printStackTrace();
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (retryTime > 0) {
+				// try again recursively
+				response = timeoutRequest(httpclient, httpget, interval, retryTime - 1);
+			}
+		} catch (SocketTimeoutException ex) {
+			ex.printStackTrace();
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (retryTime > 0) {
+				// try again recursively
+				response = timeoutRequest(httpclient, httpget, interval, retryTime - 1);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	public static Integer decodeTime(String timestr) {
