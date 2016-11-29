@@ -32,8 +32,8 @@ import org.jsoup.select.Elements;
 
 import com.chenyi.langeasy.capture.CaptureUtil;
 
-public class ParseUtil {
-	private static String dirPath = "E:/langeasy/lucene/youtube/nasa/";
+public class VideoParseUtil {
+	private static String dirPath = "E:/langeasy/lucene/youtube/cnn-breaking-news/";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		System.out.println("start time is : " + new Date());
@@ -46,114 +46,39 @@ public class ParseUtil {
 		// if (total > 0) {
 		// return;
 		// }
-		String plink = "https://www.youtube.com/playlist?list=PL2aBZuCeDwlT56jTrxQ3FExn-dtchIwsZ";
-		List<Map<String, String>> videoLst = playlist(plink);
+		String plink = "";
+		List<Map<String, String>> videoLst = videos(plink);
 
 		File sFile = new File(dirPath + "video-list.json");
 		FileUtils.writeStringToFile(sFile, new JSONArray(videoLst).toString(3), StandardCharsets.UTF_8);
 		System.out.println("end time is : " + new Date());
 	}
 
-	public static void playlists(String cpath) throws FileNotFoundException, IOException {
-		List<Map<String, String>> collectionLst = new ArrayList<>();
+	public static List<Map<String, String>> videos(String plink) throws FileNotFoundException, IOException {
 		// File file = new File("e:/browse_ajax");
-		// File file = new
-		// File("e:/langeasy/lucene/podcast/yale-courses/browse_ajax_p");
-		File file = new File(cpath);
-		String content = IOUtils.toString(new FileInputStream(file), "utf-8");
-		// String content = new JSONObject(sjson).getString("content_html");
-		// System.out.println(content);
-		int total = 1;
-		if (total > 0) {
-			// return;
-		}
-		Document doc = Jsoup.parse(content);
+		// Document doc = CaptureUtil.timeoutRequest(plink);
 
+		File htmlFile = new File(dirPath + "videos.html");
+		String sResult = IOUtils.toString(new FileInputStream(htmlFile), "utf-8");
+		Document doc = Jsoup.parse(sResult);
 		if (doc == null) {
-			return;
+			return null;
 		}
+		// System.out.println(doc.html());
 		Elements eleArr = doc.select(".channels-content-item");
 
+		List<Map<String, String>> videoLst = new ArrayList<>();
 		for (Element ele : eleArr) {
 			try {
 				Map<String, String> map = new HashMap<>();
 				Element hele = ele.select(".yt-uix-tile-link").get(0);
 				String link = hele.attr("href");
 				String name = hele.text();
-				String count = ele.select(".formatted-video-count-label b").get(0).text();
+
+				String duration = ele.select(".video-time").get(0).text();
 
 				map.put("name", name);
 				map.put("link", link);
-				map.put("count", count);
-
-				collectionLst.add(map);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println(ele);
-				System.exit(0);
-			}
-		}
-		System.out.println(new JSONArray(collectionLst).toString(3));
-	}
-
-	public static void count(String cpath) throws FileNotFoundException, IOException {
-		File sFile = new File(cpath);
-		String content = IOUtils.toString(new FileInputStream(sFile), "utf-8");
-		JSONArray courseArr = new JSONArray(content);
-		int total = 0;
-		int max = 0;
-		for (int i = 0; i < courseArr.length(); i++) {
-			JSONObject course = courseArr.getJSONObject(i);
-			String count = course.getString("count");
-			count = count.replaceAll(",", "");
-			int icount = Integer.parseInt(count);
-			total += icount;
-			if (icount > max) {
-				max = icount;
-			}
-		}
-		System.out.println(total);
-		System.out.println(max);
-		if (total > -1) {
-			// return;
-		}
-	}
-
-	public static List<Map<String, String>> playlist(String plink) throws FileNotFoundException, IOException {
-		// File file = new File("e:/browse_ajax");
-		Document doc = CaptureUtil.timeoutRequest(plink);
-
-		// File htmlFile = new File(dirPath + "playlist.html");
-		// String sResult = IOUtils.toString(new FileInputStream(htmlFile), "utf-8");
-		// Document doc = Jsoup.parse(sResult);
-		if (doc == null) {
-			return null;
-		}
-		// System.out.println(doc.html());
-		Elements eleArr = doc.select(".pl-video");
-
-		List<Map<String, String>> videoLst = new ArrayList<>();
-		for (Element ele : eleArr) {
-			try {
-				Map<String, String> map = new HashMap<>();
-				Element hele = ele.select(".pl-video-title-link").get(0);
-				String link = hele.attr("href");
-				String name = hele.text();
-
-				Elements ownerEles = ele.select(".pl-video-owner a");
-				if (ownerEles.size() == 0) {
-					continue;
-				}
-				Element ownerEle = ownerEles.get(0);
-				String olink = ownerEle.attr("href");
-				String oname = ownerEle.text();
-
-				String duration = ele.select(".pl-video-time").get(0).text();
-
-				map.put("name", name);
-				map.put("link", link);
-				map.put("oname", oname);
-				map.put("olink", olink);
 				map.put("duration", duration);
 
 				videoLst.add(map);
@@ -224,29 +149,19 @@ public class ParseUtil {
 				return;
 			}
 			// System.out.println(doc.html());
-			Elements eleArr = doc.select(".pl-video");
+			Elements eleArr = doc.select(".channels-content-item");
 
 			for (Element ele : eleArr) {
 				try {
 					Map<String, String> map = new HashMap<>();
-					Element hele = ele.select(".pl-video-title-link").get(0);
+					Element hele = ele.select(".yt-uix-tile-link").get(0);
 					String link = hele.attr("href");
 					String name = hele.text();
 
-					Elements ownerEles = ele.select(".pl-video-owner a");
-					if (ownerEles.size() == 0) {
-						continue;
-					}
-					Element ownerEle = ownerEles.get(0);
-					String olink = ownerEle.attr("href");
-					String oname = ownerEle.text();
-
-					String duration = ele.select(".pl-video-time").get(0).text();
+					String duration = ele.select(".video-time").get(0).text();
 
 					map.put("name", name);
 					map.put("link", link);
-					map.put("oname", oname);
-					map.put("olink", olink);
 					map.put("duration", duration);
 
 					videoLst.add(map);
@@ -272,7 +187,7 @@ public class ParseUtil {
 			if (moreBtn.size() > 0) {
 				String nextMoreUrl = moreBtn.get(0).attr("data-uix-load-more-href");
 				// System.out.println(nextMoreUrl);
-				if (depth < 300) {
+				if (depth < 1000) {
 					browse_ajax(videoLst, httpclient, nextMoreUrl, depth + 1);
 				}
 			}
@@ -280,44 +195,4 @@ public class ParseUtil {
 
 	}
 
-	public static void shrink(Document doc) throws Exception {
-		Element body = doc.body();
-		Elements emptyArr = body.select("p[a]");
-		System.out.println("empty size: " + emptyArr.size());
-		emptyArr.remove();
-		Elements eleArr = body.select("p");
-		for (Element ele : eleArr) {
-			String text = ele.text();
-			// System.out.println(text);
-			ele.removeAttr("w");
-			ele.html(text);
-		}
-		// System.out.println(body.html());
-		// System.out.println(eleArr.size());
-	}
-
-	public static void shrink(File file) throws Exception {
-		String content = IOUtils.toString(new FileInputStream(file), "utf-8");
-		int total = 1;
-
-		Document doc = Jsoup.parse(content);
-		Element body = doc.body();
-		Elements emptyArr = body.select("p[a]");
-		System.out.println("empty size: " + emptyArr.size());
-		emptyArr.remove();
-		if (total > 0) {
-			// return;
-		}
-		Elements eleArr = body.select("p");
-		for (Element ele : eleArr) {
-			String text = ele.text();
-			// System.out.println(text);
-			ele.removeAttr("w");
-			ele.html(text);
-		}
-		// System.out.println(body.html());
-		System.out.println(eleArr.size());
-
-		FileUtils.writeStringToFile(file, body.html(), StandardCharsets.UTF_8);
-	}
 }

@@ -43,7 +43,8 @@ public class MatcherUtil {
 				return null;
 			}
 			ttsUrl = StringEscapeUtils.unescapeJava(ttsUrl);
-			ttsUrl += "&lang=en&fmt=srv3&kind=asr";
+			ttsUrl += "&lang=en&fmt=srv3";
+			ttsUrl += "&kind=asr";// sometimes no need this param
 		}
 		return ttsUrl;
 	}

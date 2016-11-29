@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture.youtube.nasa;
+package com.chenyi.langeasy.capture.youtube.cnnbreakingnews;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,13 +21,13 @@ import com.chenyi.langeasy.capture.podcast.yalecourses.MatcherUtil;
 import com.chenyi.langeasy.capture.youtube.ParseUtil;
 
 public class CaptionFetch {
-	static JSONArray collectionList;
+	static JSONArray videoList;
 	static List<JSONObject> downloadLst = new ArrayList<>();
 	private static int[] jobStatus;
 
 	static List<String> nocaptionLst = new ArrayList<>();
 
-	private static String dirPath = "E:/langeasy/lucene/youtube/nasa/";
+	private static String dirPath = "E:/langeasy/lucene/youtube/cnn-breaking-news/";
 
 	private static JSONObject checkRepeat(String videoId) {
 		for (JSONObject video : downloadLst) {
@@ -47,50 +47,43 @@ public class CaptionFetch {
 	public static void main(String[] args) throws Exception {
 		System.out.println("start time is : " + new Date());
 
-		File sFile = new File(dirPath + "playlists.json");
+		File sFile = new File(dirPath + "video-list.json");
 		String sResult = IOUtils.toString(new FileInputStream(sFile), "utf-8");
 
-		collectionList = new JSONArray(sResult);
-		for (int i = 0; i < collectionList.length(); i++) {
-			JSONObject collection = collectionList.getJSONObject(i);
-			if (collection.has("videoLst")) {
-				JSONArray videoLst = collection.getJSONArray("videoLst");
-				for (int j = 0; j < videoLst.length(); j++) {
-					JSONObject video = videoLst.getJSONObject(j);
-					String link = video.getString("link");
-					String vid = MatcherUtil.getVid(link);
+		videoList = new JSONArray(sResult);
+		for (int i = 0; i < videoList.length(); i++) {
+			JSONObject video = videoList.getJSONObject(i);
+			String link = video.getString("link");
+			String vid = MatcherUtil.getVid(link);
 
-					String saveFilePath = dirPath + "caption/" + vid + ".xml";
-					File saveFile = new File(saveFilePath);
-					if (saveFile.exists()) {
-						continue;
-					}
-					if (video.has("nocaption")) {
-						if (!"hauoepPqns4".equals(vid)) {
-							// continue;
-						}
-					}
-					video.put("vid", vid);
-					video.put("pindex", i);
-					video.put("index", j);
-					// JSONObject oldLecture = checkRepeat(vid);
-					// if (oldLecture == null) {
-					downloadLst.add(video);
-					// } else {
-					// System.out.println(oldLecture);
-					// }
+			String saveFilePath = dirPath + "caption/" + vid + ".xml";
+			File saveFile = new File(saveFilePath);
+			if (saveFile.exists()) {
+				continue;
+			}
+			if (video.has("nocaption")) {
+				if (!"hauoepPqns4".equals(vid)) {
+					// continue;
 				}
 			}
+			video.put("vid", vid);
+			video.put("index", i);
+			// JSONObject oldLecture = checkRepeat(vid);
+			// if (oldLecture == null) {
+			downloadLst.add(video);
+			// } else {
+			// System.out.println(oldLecture);
+			// }
 		}
 
 		int total = downloadLst.size();
 		System.out.println(total);
-		int count = 87;
-		step = 17;
-		count = total / step;
-		// step = total / count;
+		int count = 150;
+		// step = 17;
+		step = total / count;
 		if (total % step != 0) {
-			count += 1;
+			step += 1;
+			count = total / step + 1;
 		}
 		// count = 152;
 		System.out.println(step + "\t" + count);
@@ -101,7 +94,7 @@ public class CaptionFetch {
 		jobStatus = new int[count];
 		int start = 0;
 		int end = count;
-		// end = 89;
+		// end = 3;
 		CaptionFetch downloader = new CaptionFetch();
 		for (int i = start; i < end; i++) {
 			Job job = downloader.new Job(i);
@@ -130,7 +123,7 @@ public class CaptionFetch {
 				System.out.println(new JSONArray(nocaptionLst).toString(3));
 				System.out.println("nocaptionLst size:" + nocaptionLst.size());
 				if (nocaptionLst.size() > 0) {
-					// FileUtils.writeStringToFile(sFile, collectionList.toString(3), StandardCharsets.UTF_8);
+					// FileUtils.writeStringToFile(sFile, videoList.toString(3), StandardCharsets.UTF_8);
 				}
 				break;
 			}
@@ -186,9 +179,8 @@ public class CaptionFetch {
 		}
 
 		private void setCaptionStatus(JSONObject video) {
-			int pindex = video.getInt("pindex");
 			int index = video.getInt("index");
-			JSONObject oriVideo = collectionList.getJSONObject(pindex).getJSONArray("videoLst").getJSONObject(index);
+			JSONObject oriVideo = videoList.getJSONObject(index);
 			oriVideo.put("nocaption", 1);
 		}
 
