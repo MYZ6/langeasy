@@ -165,7 +165,11 @@ public class ParseUtil {
 		}
 		int total = videoLst.size();
 		System.out.println(total);
-		System.out.println(videoLst.get(total - 1));
+		if (total == 0) {
+			System.err.println(plink);
+		} else {
+			System.out.println(videoLst.get(total - 1));
+		}
 		// System.out.println(new JSONArray(videoLst).toString(3));
 
 		Elements moreBtn = doc.select(".load-more-button");
