@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -16,6 +18,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import com.chenyi.langeasy.capture.podcast.yalecourses.MatcherUtil;
 
 public class CaptureUtil {
 
@@ -50,7 +54,7 @@ public class CaptureUtil {
 		String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
 		try {
 			doc = Jsoup.connect(url).userAgent(userAgent).get();
-		} catch (SocketTimeoutException ex) {
+		} catch (SocketTimeoutException | SSLHandshakeException ex) {
 			System.out.println("url " + url + " read timeout");
 			ex.printStackTrace();
 			doc = timeoutRequest(url);// try again recursively
@@ -90,6 +94,42 @@ public class CaptureUtil {
 			if (404 == ex.getStatusCode()) {
 				System.out.println("url " + url + " 404");
 				ex.printStackTrace();
+			}
+			if (403 == ex.getStatusCode()) {
+				System.err.println("url " + url + " 403");
+				ex.printStackTrace();
+			}
+			// throw ex;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return doc;
+	}
+
+	public static Document timeoutRequest(String url, int interval, int retryTime) {
+		Document doc = null;
+		String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
+		try {
+			doc = Jsoup.connect(url).userAgent(userAgent).get();
+		} catch (SocketTimeoutException ex) {
+			System.out.println("url " + url + " read timeout");
+			ex.printStackTrace();
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (retryTime > 0) {
+				// try again recursively
+				doc = timeoutRequest(url, interval, retryTime - 1);
+			}
+			// throw ex;
+		} catch (HttpStatusException ex) {
+			if (404 == ex.getStatusCode()) {
+				System.out.println("url " + url + " 404");
+				ex.printStackTrace();
+				url = MatcherUtil.getTurl2(url);
+				doc = timeoutRequest(url, interval, retryTime);
 			}
 			if (403 == ex.getStatusCode()) {
 				System.err.println("url " + url + " 403");

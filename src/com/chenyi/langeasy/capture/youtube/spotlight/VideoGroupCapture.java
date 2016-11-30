@@ -1,10 +1,12 @@
-package com.chenyi.langeasy.capture.youtube.tedxtalks;
+package com.chenyi.langeasy.capture.youtube.spotlight;
+
+import com.chenyi.langeasy.capture.youtube.tedxtalks.CaptionFetch;
 
 public class VideoGroupCapture {
-	private static String dirPath = "E:/langeasy/lucene/youtube/TEDxTalks/";
+	private static String dirPath = "E:/langeasy/lucene/youtube/spotlight/";
 
 	public static void main(String[] args) throws Exception {
-		int clipCount = 41;
+		int clipCount = 10;
 		for (int ci = 0; ci < clipCount; ci++) {
 			// VideoCapture.handle(ci, dirPath + "playlists" + (ci + 1) + "/");
 			CaptionFetch.handle(ci, dirPath + "playlists" + (ci + 1) + "/");

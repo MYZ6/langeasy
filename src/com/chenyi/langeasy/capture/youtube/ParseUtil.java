@@ -286,6 +286,9 @@ public class ParseUtil {
 
 	public static void shrink(Document doc) throws Exception {
 		Element body = doc.body();
+		if (body == null) {
+			return;
+		}
 		Elements emptyArr = body.select("p[a]");
 		System.out.println("empty size: " + emptyArr.size());
 		emptyArr.remove();

@@ -40,6 +40,10 @@ public class SearchTest {
 
 	/** Simple command-line based search demo. */
 	public static void main(String[] args) throws Exception {
+		search();
+	}
+
+	public static void search() throws Exception {
 		String index = "F:/Personal/ws_indigo/lucene/index";
 		String field = "contents";
 
@@ -91,12 +95,14 @@ public class SearchTest {
 				unmatchList.add(word);
 			}
 		}
-		reader.close();
 		System.out.println("findWTotal: " + findWTotal);
 		System.out.println("findSTotal: " + findSTotal);
 		System.out.println(new JSONArray(unmatchList).toString(3));
 		System.out.println(unmatchList.size());
 		System.out.println();
+
+		// boolean result = search(searcher, parser, "abc");
+		reader.close();
 	}
 
 	static int findWTotal = 0;

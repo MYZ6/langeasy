@@ -27,7 +27,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -51,43 +53,81 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class IndexFiles {
 
-	private IndexFiles() {
+	public static void main(String[] args) throws Exception {
+		System.out.println("start time is: " + new Date());
+		List<String> dpathList = new ArrayList<>();
+		// dpathList.add(pathRender("StanfordUniversity"));
+		// dpathList.add(pathRender("Harvard"));
+		// dpathList.add(pathRender("MIT"));
+		// dpathList.add(pathRender("CambridgeUniversity"));
+		// dpathList.add(pathRender("oxford"));
+		// dpathList.add(pathRender("OUPAcademic"));
+		// dpathList.add(pathRender("OxfordSBS"));
+		// dpathList.add(pathRender("princetonuniversity"));
+		// dpathList.add(pathRender("UCBerkeley"));
+		// dpathList.add(pathRender("UCLA"));
+		for (String dpath : dpathList) {
+			index(dpath);
+		}
+		SearchTest.search();
+		System.out.println("end time is: " + new Date());
+	}
+
+	private static String pathRender(String channelName) {
+		return "E:/langeasy/lucene/youtube/" + channelName + "/caption";
 	}
 
 	/** Index all text files under a directory. */
-	public static void main(String[] args) {
-		String usage = "java org.apache.lucene.demo.IndexFiles"
-				+ " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
-				+ "This indexes the documents in DOCS_PATH, creating a Lucene index"
-				+ "in INDEX_PATH that can be searched with SearchFiles";
+	public static void index(String docsPath) {
 		// String indexPath = "index";
 		String indexPath = "F:/Personal/ws_indigo/lucene/index";
 		// String docsPath = null;
 		// String docsPath = "E:/langeasy/lucene/podcast";
 		// boolean create = true;
 		// String docsPath = "E:/langeasy/lucene/tv";
-		String docsPath = "E:/langeasy/lucene/srt";
+		// String docsPath = "E:/langeasy/lucene/srt";
 		// String docsPath = "E:/langeasy/lucene/podcast/freshair/transcript";
 		// String docsPath = "E:/langeasy/lucene/podcast/money/transcript";
 		// String docsPath =
+		// "E:/langeasy/lucene/podcast/allthingsconsidered/transcript";
+		// String docsPath =
 		// "E:/langeasy/lucene/podcast/morningedition/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/wait-wait-dont-tell-me/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/invisibilia/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/hidden-brain/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/weekend-edition-saturday/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/weekend-edition-sunday/transcript";
+		// String docsPath = "E:/langeasy/lucene/podcast/politics/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/ask-me-another/transcript";
+		// String docsPath = "E:/langeasy/lucene/podcast/ted-talks/transcript";
+		// String docsPath =
+		// "E:/langeasy/lucene/podcast/freakonomics/transcript";
+		// String docsPath = "E:/langeasy/lucene/podcast/serial/transcript";
+		// String docsPath = "E:/langeasy/lucene/podcast/ted-ed/transcript";
+		// String docsPath = "E:/langeasy/lucene/podcast/yale-courses/transcript";
+		// String docsPath = "E:/langeasy/lucene/youtube/nasa/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/movieclipsTRAILERS/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/Vsauce/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/vice/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/DiscoveryNetworks/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/collegehumor/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/AnimalPlanetTV/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/AsapSCIENCE/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/latenight/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/rhettandlink2/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/TheEllenShow/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/zoella280390/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/cnn-breaking-news/caption";
+		// String docsPath = "E:/langeasy/lucene/youtube/TEDxTalks";
+		// String docsPath = "E:/langeasy/lucene/youtube/spotlight";
+		// String docsPath = "E:/langeasy/lucene/youtube/Howcast";
 		boolean create = false;
-		// for (int i = 0; i < args.length; i++) {
-		// if ("-index".equals(args[i])) {
-		// indexPath = args[i + 1];
-		// i++;
-		// } else if ("-docs".equals(args[i])) {
-		// docsPath = args[i + 1];
-		// i++;
-		// } else if ("-update".equals(args[i])) {
-		// create = false;
-		// }
-		// }
-
-		if (docsPath == null) {
-			System.err.println("Usage: " + usage);
-			System.exit(1);
-		}
 
 		final Path docDir = Paths.get(docsPath);
 		if (!Files.isReadable(docDir)) {

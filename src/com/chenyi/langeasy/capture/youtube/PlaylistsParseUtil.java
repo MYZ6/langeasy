@@ -32,7 +32,7 @@ import org.jsoup.select.Elements;
 import com.chenyi.langeasy.capture.CaptureUtil;
 
 public class PlaylistsParseUtil {
-	private static String channelName = "zoella280390";
+	private static String channelName = "OUPAcademic";
 	private static String dirPath;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -42,6 +42,30 @@ public class PlaylistsParseUtil {
 		String cpath = dirPath + "playlists.html";
 		String clink = "https://www.youtube.com/user/" + channelName + "/playlists";
 		// clink += "?shelf_id=0&view=1&sort=dd";
+		// clink = "https://www.youtube.com/user/latenight/playlists?shelf_id=0&view=1&sort=dd";
+		List<Map<String, String>> collectionLst = playlists(clink);
+
+		File sFile = new File(dirPath + "playlists.json");
+		FileUtils.writeStringToFile(sFile, new JSONArray(collectionLst).toString(3), StandardCharsets.UTF_8);
+		System.out.println("end time is : " + new Date());
+	}
+
+	public static void handle(String channelName, int type) throws FileNotFoundException, IOException {
+		dirPath = "E:/langeasy/lucene/youtube/" + channelName + "/";
+		File dir = new File(dirPath);
+		if (!dir.exists()) {
+			dir.mkdir();
+		} else {
+			System.err.println(channelName + " already handled!");
+			System.exit(1);
+		}
+		System.out.println("start time is : " + new Date());
+
+		String cpath = dirPath + "playlists.html";
+		String clink = "https://www.youtube.com/user/" + channelName + "/playlists";
+		if (type == 1) {
+			clink += "?shelf_id=0&view=1&sort=dd";
+		}
 		// clink = "https://www.youtube.com/user/latenight/playlists?shelf_id=0&view=1&sort=dd";
 		List<Map<String, String>> collectionLst = playlists(clink);
 

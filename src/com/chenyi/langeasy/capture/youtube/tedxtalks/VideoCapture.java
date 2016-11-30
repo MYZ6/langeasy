@@ -25,13 +25,14 @@ import com.chenyi.langeasy.capture.youtube.ParseUtil;
 public class VideoCapture {
 	private static String dirPath;
 	private static JSONArray collectionList;
-	private static ArrayList<JSONObject> downloadLst = new ArrayList<>();
+	private static ArrayList<JSONObject> downloadLst;
 	private static int[] jobStatus;
 	private static int subCollectionIndex;
 
 	public static void handle(int sindex, String subPath) throws FileNotFoundException, IOException, ParseException {
 		dirPath = subPath;
 		subCollectionIndex = sindex;
+		downloadLst = new ArrayList<>();
 		File sFile = new File(dirPath + "playlists.json");
 		String sResult = IOUtils.toString(new FileInputStream(sFile), "utf-8");
 		collectionList = new JSONArray(sResult);
@@ -39,7 +40,10 @@ public class VideoCapture {
 		for (int i = 0; i < collectionList.length(); i++) {
 			JSONObject playlist = collectionList.getJSONObject(i);
 			if (playlist.has("videoLst")) {
-				continue;
+				JSONArray videoLst = playlist.getJSONArray("videoLst");
+				if (videoLst.length() > 0) {
+					continue;
+				}
 			}
 			playlist.put("index", i);// easy for matching later
 			downloadLst.add(playlist);
@@ -48,7 +52,7 @@ public class VideoCapture {
 		int total = downloadLst.size();
 		System.out.println(total);
 		if (total == 0) {
-			// return;
+			return;
 		}
 		int count = 150;
 		// step = 17;
@@ -62,7 +66,7 @@ public class VideoCapture {
 		}
 		System.out.println(step + "\t" + count);
 		if (total > -1) {
-			return;
+			// return;
 		}
 
 		jobStatus = new int[count];

@@ -1,7 +1,11 @@
-package com.chenyi.langeasy.capture.youtube.tedxtalks;
+package com.chenyi.langeasy.capture.youtube.Howcast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -10,15 +14,70 @@ import org.json.JSONObject;
 import com.chenyi.langeasy.capture.podcast.yalecourses.MatcherUtil;
 import com.chenyi.langeasy.capture.youtube.ParseUtil;
 
-public class Test {
-	private static String dirPath = "E:/langeasy/lucene/youtube/TEDxTalks/";
+public class CheckDownloadRepeat {
+	static String dirPath = "E:/langeasy/lucene/youtube/Howcast/";
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws IOException {
+		check();
+		check2();
+		System.out.println();
+		check3();
+	}
+
+	public static void check() throws IOException {
+		int clipCount = 10;
+
+		Set<String> vidLst = new HashSet<>();
+		int total = 0;
+		for (int ci = 0; ci < clipCount; ci++) {
+			String subDirPath = dirPath + "playlists" + (ci + 1) + "/";
+
+			File sFile = new File(subDirPath + "playlists.json");
+			String sResult = IOUtils.toString(new FileInputStream(sFile), "utf-8");
+
+			JSONArray collectionList = new JSONArray(sResult);
+			for (int i = 0; i < collectionList.length(); i++) {
+				JSONObject collection = collectionList.getJSONObject(i);
+				if (collection.has("videoLst")) {
+					JSONArray videoLst = collection.getJSONArray("videoLst");
+					for (int j = 0; j < videoLst.length(); j++) {
+						JSONObject video = videoLst.getJSONObject(j);
+						String link = video.getString("link");
+						String vid = MatcherUtil.getVid(link);
+
+						vidLst.add(vid);
+						total += 1;
+					}
+				}
+			}
+
+		}
+		System.out.println(total);
+		System.out.println(vidLst.size());
+	}
+
+	public static void check2() throws IOException {
+		int clipCount = 10;
+
+		Set<String> vidLst = new HashSet<>();
+		int total = 0;
+		for (int ci = 0; ci < clipCount; ci++) {
+			String subDirPath = dirPath + "playlists" + (ci + 1) + "/caption/";
+			File subDir = new File(subDirPath);
+			String[] fnameArr = subDir.list();
+			vidLst.addAll(Arrays.asList(fnameArr));
+			total += fnameArr.length;
+		}
+		System.out.println(total);
+		System.out.println(vidLst.size());
+	}
+
+	public static void check3() throws IOException {
 		String cpath = dirPath + "playlists.json";
 		// cpath = dirPath + "playlists41/playlists.json";
 		ParseUtil.count(cpath);
 
-		int clipCount = 41;
+		int clipCount = 10;
 		if (clipCount > 0) {
 			// return;
 		}

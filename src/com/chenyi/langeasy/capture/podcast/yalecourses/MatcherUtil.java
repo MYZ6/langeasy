@@ -49,6 +49,11 @@ public class MatcherUtil {
 		return ttsUrl;
 	}
 
+	public static String getTurl2(String ttsUrl) {
+		ttsUrl = ttsUrl.substring(0, ttsUrl.length() - 9);
+		return ttsUrl;
+	}
+
 	public static String getVid(String link) {
 		String[] arr1 = link.split("&");
 		// System.out.println(new JSONArray(arr1).toString(3));

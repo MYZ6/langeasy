@@ -1,4 +1,4 @@
-package com.chenyi.langeasy.capture.youtube.tedxtalks;
+package com.chenyi.langeasy.capture.youtube.Howcast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -30,22 +31,7 @@ public class CaptionFetch {
 	private static String dirPath;
 	private static int subCollectionIndex;
 
-	private static JSONObject checkRepeat(String videoId) {
-		for (JSONObject video : downloadLst) {
-			if (video.getString("vid").equals(videoId)) {
-				int count = 1;
-				if (video.has("count")) {
-					count = video.getInt("count");
-				}
-				count += 1;
-				video.put("count", count);
-				return video;
-			}
-		}
-		return null;
-	}
-
-	public static void handle(int sindex, String subPath) throws Exception {
+	public static void handle(Set<String> vidLst, int sindex, String subPath) throws Exception {
 		dirPath = subPath;
 		subCollectionIndex = sindex;
 		downloadLst = new ArrayList<>();
@@ -79,11 +65,10 @@ public class CaptionFetch {
 					video.put("vid", vid);
 					video.put("pindex", i);
 					video.put("index", j);
-					JSONObject oldLecture = checkRepeat(vid);
-					if (oldLecture == null) {
+					vidLst.contains(vid);
+					if (!vidLst.contains(vid)) {
+						vidLst.add(vid);
 						downloadLst.add(video);
-					} else {
-						// System.out.println(oldLecture);
 					}
 				}
 			}
