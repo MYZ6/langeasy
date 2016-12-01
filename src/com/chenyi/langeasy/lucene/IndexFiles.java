@@ -66,6 +66,16 @@ public class IndexFiles {
 		// dpathList.add(pathRender("princetonuniversity"));
 		// dpathList.add(pathRender("UCBerkeley"));
 		// dpathList.add(pathRender("UCLA"));
+		// dpathList.add(pathRender("um"));
+		// dpathList.add(pathRender("PennState"));
+		// dpathList.add(pathRender("nyu"));
+		// dpathList.add(pathRender("MichiganStateU"));
+		// dpathList.add(pathRender("columbiauniversity"));
+		// dpathList.add(pathRender("scishow"));
+		// dpathList.add(pathRender("UCtelevision"));
+		// dpathList.add(pathRender("UChicago"));
+		// dpathList.add(pathRender("UWTV"));
+		// dpathList.add(pathRender("Duke"));
 		for (String dpath : dpathList) {
 			index(dpath);
 		}

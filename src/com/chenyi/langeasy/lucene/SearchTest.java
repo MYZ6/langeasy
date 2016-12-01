@@ -95,14 +95,23 @@ public class SearchTest {
 				unmatchList.add(word);
 			}
 		}
+		reader.close();
+
 		System.out.println("findWTotal: " + findWTotal);
 		System.out.println("findSTotal: " + findSTotal);
 		System.out.println(new JSONArray(unmatchList).toString(3));
 		System.out.println(unmatchList.size());
 		System.out.println();
 
+		String[] arr2 = new String[] { "abaft", "approbatory", "betroth", "bungler", "churlishness", "contumacious",
+				"deliquesce", "extricable", "froward", "imprecate", "incommodious", "ligneous", "minatory",
+				"nefariousness", "objurgate", "obtrude", "opprobrious", "preponderate", "recusant", "retroaction",
+				"sapid", "sedulous", "traduce", "tumid", "unwonted" };
+		String[] unmatchArr = new String[unmatchList.size()];
+		unmatchArr = unmatchList.toArray(unmatchArr);
+		CompareResult.compare(arr2, unmatchArr);
+
 		// boolean result = search(searcher, parser, "abc");
-		reader.close();
 	}
 
 	static int findWTotal = 0;
