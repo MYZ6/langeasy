@@ -20,8 +20,9 @@ public class CheckDownloadRepeat {
 
 	public static void checkRepeat(String dirPath) throws IOException {
 		Set<String> vidLst = new HashSet<>();
+		int ctotal = 0;
 		int total = 0;
-		int ncTotal = 0;
+		int zeroPtotal = 0;
 
 		File sFile = new File(dirPath + "playlists.json");
 		String sResult = IOUtils.toString(new FileInputStream(sFile), "utf-8");
@@ -35,9 +36,6 @@ public class CheckDownloadRepeat {
 					JSONObject video = videoLst.getJSONObject(j);
 					String link = video.getString("link");
 					String vid = MatcherUtil.getVid(link);
-					if (video.has("nocaption")) {
-						ncTotal += 1;
-					}
 
 					vidLst.add(vid);
 					total += 1;
@@ -45,7 +43,11 @@ public class CheckDownloadRepeat {
 				String count = collection.getString("count");
 				count = count.replaceAll(",", "");
 				int icount = Integer.parseInt(count);
+				ctotal += icount;
 				if (videoLst.length() != icount) {
+					if (videoLst.length() == 0) {
+						zeroPtotal += 1;
+					}
 					System.out.println("count: " + collection.getString("count") + "\tvideoLst length: "
 							+ videoLst.length() + "\t" + collection.getString("name") + "\t"
 							+ collection.getString("link"));
@@ -54,10 +56,13 @@ public class CheckDownloadRepeat {
 				System.out.println(collection);
 			}
 		}
+		System.out.println(dirPath);
 
+		System.out.println("playlist count video total: " + ctotal);
 		System.out.println("video total: " + total);
+		System.err.println("failed playlist count " + zeroPtotal);
+		System.out.println("possible private video count " + (ctotal - total));
 		System.out.println("no repeat video total: " + vidLst.size());
-		System.out.println("no caption total " + ncTotal);
 	}
 
 	public static void check(String dirPath) throws IOException {
@@ -96,10 +101,17 @@ public class CheckDownloadRepeat {
 				ntTotal += 1;
 			}
 		}
+		System.out.println(dirPath);
 
 		System.out.println("video total: " + total);
 		System.out.println("no repeat video total: " + vidLst.size());
 		System.out.println("no caption total " + ncTotal);
 		System.out.println("no text or very little text Total " + ntTotal);
+		int sdTotal = (vidLst.size() - ncTotal);
+		System.out.println("supposed downloaed count " + sdTotal);
+		int dTotal = cdir.list().length;
+		System.out.println("caption files downloaded count: " + dTotal);
+		int fTotal = sdTotal - dTotal;
+		System.err.println("failed downloading count: " + fTotal);
 	}
 }
