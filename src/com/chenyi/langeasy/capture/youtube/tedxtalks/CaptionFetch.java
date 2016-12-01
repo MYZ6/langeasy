@@ -131,10 +131,18 @@ public class CaptionFetch {
 				e.printStackTrace();
 			}
 			boolean allFinished = true;
+			int finishedCount = 0;
 			for (int j = start; j < end; j++) {
 				if (jobStatus[j] == 0) {
 					allFinished = false;
-					break;
+					// break;
+				} else {
+					finishedCount += 1;
+				}
+			}
+			if (i % 16 == 15) {// each 45 seconds update nocaptionLst
+				if (nocaptionLst.size() > 0) {
+					FileUtils.writeStringToFile(sFile, collectionList.toString(), StandardCharsets.UTF_8);
 				}
 			}
 			System.out.println(new JSONArray(jobStatus));
