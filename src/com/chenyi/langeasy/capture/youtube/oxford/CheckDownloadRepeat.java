@@ -18,7 +18,7 @@ public class CheckDownloadRepeat {
 		check(dirPath);
 	}
 
-	public static void checkRepeat(String dirPath) throws IOException {
+	public static int checkRepeat(String dirPath) throws IOException {
 		Set<String> vidLst = new HashSet<>();
 		int ctotal = 0;
 		int total = 0;
@@ -63,6 +63,8 @@ public class CheckDownloadRepeat {
 		System.err.println("failed playlist count " + zeroPtotal);
 		System.out.println("possible private video count " + (ctotal - total));
 		System.out.println("no repeat video total: " + vidLst.size());
+
+		return zeroPtotal;
 	}
 
 	public static void check(String dirPath) throws IOException {

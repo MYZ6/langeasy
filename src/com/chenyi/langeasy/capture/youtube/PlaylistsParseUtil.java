@@ -57,7 +57,8 @@ public class PlaylistsParseUtil {
 			dir.mkdir();
 		} else {
 			System.err.println(channelName + " already handled!");
-			System.exit(1);
+			// System.exit(1);
+			return;
 		}
 		System.out.println("start time is : " + new Date());
 
@@ -65,6 +66,8 @@ public class PlaylistsParseUtil {
 		String clink = "https://www.youtube.com/user/" + channelName + "/playlists";
 		if (type == 1) {
 			clink += "?shelf_id=0&view=1&sort=dd";
+		} else if (type == 2) {
+			clink = "https://www.youtube.com/channel/" + channelName + "/playlists";
 		}
 		// clink = "https://www.youtube.com/user/latenight/playlists?shelf_id=0&view=1&sort=dd";
 		List<Map<String, String>> collectionLst = playlists(clink);
