@@ -1,0 +1,60 @@
+@charset "UTF-8";
+
+body {
+	font-size: 15px;
+	height: 600px;
+}
+
+.word-list {
+	float: left;
+	width: 500px;
+	/* 	height: 100%; */
+	height: 600px;
+	overflow: auto;
+}
+
+.command-zone {
+	float: left;
+	width: 200px;
+/* 	height: 200px; */
+	overflow: auto;
+	padding-left: 30px;
+	box-sizing: border-box;
+}
+
+.command-zone input {
+	font-size: 28px;
+	padding: 15px;
+	width: 150px;
+	margin-bottom: 50px;
+	cursor: pointer;
+}
+
+.word-item {
+	margin: 1px;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.word-item.checked {
+	background: #338899;
+}
+
+#word-content {
+	float: left;
+	width: 850px;
+	height: 600px;
+	overflow: auto;
+	position: relative;
+	margin: 5px;
+	padding: 8px;
+	padding-bottom: 50px;
+	box-sizing: border-box;
+	border: 1px solid blue;
+	margin: 5px;
+	/* 	height: 100%; */
+}
+
+#passBtn {
+	font-size: 20px;
+}
