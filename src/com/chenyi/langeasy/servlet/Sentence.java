@@ -74,7 +74,7 @@ public class Sentence {
 		}
 		rs.close();
 		st.close();
-		conn.close();
+//		conn.close();
 
 		System.out.println(jsonLst);
 		return new JSONArray(jsonLst);

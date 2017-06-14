@@ -12,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class SqliteHelper {
@@ -36,10 +38,15 @@ public class SqliteHelper {
 		}
 	}
 
+	private static Map<String, Connection> connMap = new HashMap<>();
+
 	public static Connection getConnection(String dbname) {
-		Connection conn = null;
 		if (dbname == null) {
 			dbname = "langeasy";
+		}
+		Connection conn = connMap.get(dbname);
+		if (conn != null) {
+			return conn;
 		}
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -56,12 +63,13 @@ public class SqliteHelper {
 			e.printStackTrace();
 		}
 
+		connMap.put(dbname, conn);
 		return conn;
 	}
 
 	/**
 	 * Read the file and returns the byte array
-	 * 
+	 *
 	 * @param file
 	 * @return the bytes of the file
 	 */
@@ -71,7 +79,7 @@ public class SqliteHelper {
 			FileInputStream fis = new FileInputStream(file);
 			byte[] buffer = new byte[1024];
 			bos = new ByteArrayOutputStream();
-			for (int len; (len = fis.read(buffer)) != -1;) {
+			for (int len; (len = fis.read(buffer)) != -1; ) {
 				bos.write(buffer, 0, len);
 			}
 		} catch (FileNotFoundException e) {
