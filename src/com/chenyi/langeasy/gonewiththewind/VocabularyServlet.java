@@ -52,6 +52,16 @@ public class VocabularyServlet extends HttpServlet {
 				JSONObject result = new JSONObject();
 				result.put("msg", "success");
 				outJS(response, result.toString());
+			} else if ("unknown".equals(type)) {
+				String wordids = request.getParameter("wordids");
+				Vocabulary.unknown(conn, wordids);
+
+				JSONObject result = new JSONObject();
+				result.put("msg", "success");
+				outJS(response, result.toString());
+			} else if ("translate".equals(type)) {
+				String word = request.getParameter("word");
+				outHTML(response, Vocabulary.translate(word).toString());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -73,6 +83,18 @@ public class VocabularyServlet extends HttpServlet {
 
 	protected void outJS(HttpServletResponse response, String value) {
 		response.setContentType("application/json; charset=UTF-8");
+		try {
+			PrintWriter out = response.getWriter();
+			out.print(value);
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void outHTML(HttpServletResponse response, String value) {
+		response.setContentType("text/html; charset=UTF-8");
 		try {
 			PrintWriter out = response.getWriter();
 			out.print(value);

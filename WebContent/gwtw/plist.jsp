@@ -28,7 +28,7 @@
 
 	<div class="command-zone">
 		<div>Total: <t class="total"></t></div>
-		<input type="button" id="btn-pass" value="Pass" />
+		<input type="button" id="btn-unpass" value="Unpass" />
 		<br>
 		<input type="button" id="btn-refresh" value="Refresh" />
 	</div>

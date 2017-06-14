@@ -27,9 +27,15 @@
 	</div>
 
 	<div class="command-zone">
+		<div>Total: <t class="total"></t></div>
 		<input type="button" id="btn-pass" value="Pass" />
 		<br>
+		<input type="button" id="btn-unknown" value="Unknown" />
 		<input type="button" id="btn-refresh" value="Refresh" />
+		<div id="translate">
+		
+		
+		</div>
 	</div>
 </body>
 </html>
