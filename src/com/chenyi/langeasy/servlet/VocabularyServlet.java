@@ -46,6 +46,9 @@ public class VocabularyServlet extends HttpServlet {
 			} else if ("lista".equals(type)) {
 				JSONArray arr = Vocabulary.listAword(conn);
 				outJS(response, arr.toString());
+			} else if ("list2".equals(type)) {
+				JSONArray arr = Vocabulary.listTest(conn);
+				outJS(response, arr.toString());
 			} else if ("book".equals(type)) {
 				String bookid = request.getParameter("id");
 				JSONObject book = Vocabulary.book(conn, bookid);
@@ -71,6 +74,13 @@ public class VocabularyServlet extends HttpServlet {
 				JSONObject result = new JSONObject();
 				result.put("msg", "success");
 				outJS(response, result.toString());
+			} else if ("fav".equals(type)) {
+				String sentenceId = request.getParameter("sid");
+				Vocabulary.favorite(conn, Integer.parseInt(sentenceId));
+
+				JSONObject result = new JSONObject();
+				result.put("msg", "success");
+				outJS(response, result.toString());
 			} else if ("dB".equals(type)) {
 				JSONArray arr = Sentence.listSentenceByDB();
 				outJS(response, arr.toString());
@@ -79,9 +89,7 @@ public class VocabularyServlet extends HttpServlet {
 				outJS(response, arr.toString());
 			} else if ("translate".equals(type)) {
 				String word = request.getParameter("word");
-				JSONObject result = new JSONObject();
-				result.put("chinese", Vocabulary.translate(word));
-				outJS(response, result.toString());
+				outJS(response, Vocabulary.translate(word).toString());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

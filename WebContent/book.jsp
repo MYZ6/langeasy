@@ -10,6 +10,7 @@
 	<title>vocabulary</title>
 	
 	<link rel="stylesheet" type="text/css" href="<%=root %>/index.css" />
+	<link rel="stylesheet" type="text/css" href="<%=root %>/translate.css" />
 	
 	<script type="text/javascript">
 	    var root = "<%=root %>";
@@ -48,8 +49,6 @@
 		<h3>Audio Examples</h3>
 		<div id="audio-example"></div>
 		
-		<div id="translate-panel">
-		</div>
 	</div>
 	<div class="command-zone">
 		<input type="button" id="btn-pass" value="Pass" />
@@ -57,5 +56,7 @@
 		<input type="button" id="btn-pause" value="Pause" />
 	</div>
 	
+	<div id="translate-panel">
+	</div>
 </body>
 </html>

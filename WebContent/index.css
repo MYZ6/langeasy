@@ -38,7 +38,7 @@ body {
 
 #word-content {
 	float: left;
-	width: 850px;
+	width: 950px;
 	height: 600px;
 	overflow: auto;
 	position: relative;
@@ -62,7 +62,7 @@ body {
 
 #pron {
 	margin: 15px;
-	font: italy;
+	font-style: italic;
 }
 
 #meaning {
@@ -182,9 +182,12 @@ li.playing:before {
 
 #translate-panel {
 	position: absolute;
-	left: -300px;
-	width: 100px;
-	height: 30px;
+	display: none;
+	right: 0px;
+	bottom: 0px;
+	width: 350px;
+	height: 350px;
+	overflow: auto;
 	border: 1px solid green;
 	background: white;
 	padding: 8px;

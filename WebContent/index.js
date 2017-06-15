@@ -21,11 +21,10 @@ function initEvent() {
 		if (text != '') {
 			translate(encodeURI(text), e.pageX - 180, e.pageY + 5 + $('#word-content').scrollTop());
 		} else {
-			$('#translate-panel').css({
-				"left" : -800
-			});
+			$('#translate-panel').hide();
 		}
 	}
+
 	function singleClick(e) {
 		getSelectionText(e);
 	}
@@ -70,7 +69,7 @@ function doPass(evt) {
 function translate(word, x, y) {
 	$.ajax({
 		type : "GET",
-		url : root + '/api?t=translate',
+		url : root + '/gwtw?t=translate',
 		data : {
 			"word" : word
 		},
@@ -79,10 +78,7 @@ function translate(word, x, y) {
 		},
 		success : function(data) {
 			console.log(data);
-			$('#translate-panel').html(data.chinese).css({
-				"left" : x,
-				"top" : y
-			});
+			$('#translate-panel').empty().html(data).show();
 		}
 	});
 }
@@ -101,17 +97,17 @@ function initData() {
 		success : function(data) {
 			// console.log(data);
 			$(data).each(
-					function(i, word) {
-						$word = $('<div id="word' + word.wordid + '" class="word-item"><span>' + (i + 1)
-								+ '/</span><span>' + word.wordid + '&nbsp;</span>' + word.word + '</div>');
-						$word.click(function() {
-							// var _url = root + '/word.jsp?id=' +
-							// word.wordid;
-							// window.open(_url, '_blank');
-							showWord(word.wordid);
-						});
-						$('#word-list').append($word);
+				function(i, word) {
+					$word = $('<div id="word' + word.wordid + '" class="word-item"><span>' + (i + 1)
+						+ '/</span><span>' + word.wordid + '&nbsp;</span>' + word.word + '</div>');
+					$word.click(function() {
+						// var _url = root + '/word.jsp?id=' +
+						// word.wordid;
+						// window.open(_url, '_blank');
+						showWord(word.wordid);
 					});
+					$('#word-list').append($word);
+				});
 			$('.word-item').eq(0).trigger('click');
 		}
 	});
@@ -141,40 +137,47 @@ function showWord(wordId) {
 			});
 
 			$(data.meaning).each(
-					function(i, item) {
-						$('#meaning').append(
-								'<div class="meaning-type">' + item.type + '</div><div class="meaning-content">'
-										+ item.meaning + '</div>');
-						$(item.example).each(function(i, item) {
-							$('#meaning').append('<div class="example">' + item.sentence + '</div>');
-						});
+				function(i, item) {
+					$('#meaning').append(
+						'<div class="meaning-type">' + item.type + '</div><div class="meaning-content">'
+						+ item.meaning + '</div>');
+					$(item.example).each(function(i, item) {
+						$('#meaning').append('<div class="example">' + item.sentence + '</div>');
 					});
+				});
 
 			$(data.aexample).each(
-					function(i, item) {
-						var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
-						$sentence = $('<div class="aexample"><div>' + item.booktype
-								+ '</div><div class="book-name" bookid="' + item.bookid + '">' + item.bookname
-								+ '</div><div style="color: blue;">' + item.coursename
-								+ '</div><div class="audio-item" data-src="' + _url + '"><span>' + (i + 1)
-								+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence) + '<div>' + item.chinese
-								+ '</div></div>');
+				function(i, item) {
+					var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
+					$sentence = $('<div class="aexample"><div>' + item.booktype
+						+ '</div><div class="book-name" bookid="' + item.bookid + '">' + item.bookname
+						+ '</div><div style="color: blue;">' + item.coursename
+						+ '</div><div class="audio-item" data-src="' + _url + '"><span>' + (i + 1)
+						+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence) + '<div>' + item.chinese+ favoriteRender(item.favorite)
+						+ '</div></div>');
 
-						// $sentence.append('<audio controls
-						// src="' + _url +
-						// '">sdfd</audio>');
-						// $sentence.click(function() {
-						// window.open(_url);
-						// });
-						$('#audio-example').append($sentence);
-					});
+					// $sentence.append('<audio controls
+					// src="' + _url +
+					// '">sdfd</audio>');
+					// $sentence.click(function() {
+					// window.open(_url);
+					// });
+					$('#audio-example').append($sentence);
+				});
 			function sentenceRender(sentence) {
 				var word = data.word;
 				var startIndex = sentence.indexOf(word);
 				var endIndex = startIndex + word.length;
 				var result = sentence.substr(0, startIndex) + '<span style="color: red; font-weight: bold;">'
-						+ sentence.substr(startIndex, word.length) + '</span>' + sentence.substr(endIndex);
+					+ sentence.substr(startIndex, word.length) + '</span>' + sentence.substr(endIndex);
 				return result;
+			}
+
+			function favoriteRender(favorite) {
+				if (favorite == true) {
+					return '<span style="font-size: 28px; margin-left: 100px; color: red; border: 1px solid yellow;">Favorited</span>';
+				}
+				return '<a href="javascript:;" style="font-size: 28px; margin-left: 100px; text-decoration: underline;">favorite</a>'
 			}
 
 			$('.book-name').click(function(evt) {
@@ -192,7 +195,7 @@ function showWord(wordId) {
 	var startIndex = sentence.indexOf(word);
 	var endIndex = startIndex + word.length;
 	var result = sentence.substr(0, startIndex) + '<span>' + sentence.substr(startIndex, word.length) + '</span>'
-			+ sentence.substr(endIndex);
+		+ sentence.substr(endIndex);
 	console.log(startIndex, result);
 	console.log(sentence);
 }
