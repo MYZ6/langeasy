@@ -1,0 +1,61 @@
+@charset "UTF-8";
+
+.phonetic-transcription:first-child {
+	margin-right: 20px;
+}
+
+.phonetic-transcription {
+	font-size: 14px;
+}
+
+.phonetic-transcription span {
+	color: #333;
+	font: 700 14px arial, "宋体";
+	margin-right: 5px;
+}
+
+.phonetic-transcription span,.phonetic-transcription b,.phonetic-transcription a
+	{
+	display: inline-block;
+	vertical-align: baseline;
+}
+
+.phonetic-transcription b {
+	color: #333;
+	font: 14px arial;
+	vertical-align: baseline;
+}
+
+.dictionary-comment b      ~ .dict-comment-mean {
+	padding-left: 30px;
+}
+
+.dictionary-comment .dict-comment-mean .dict-margin {
+	margin-right: 10px;
+}
+
+.dictionary-exchange {
+	line-height: 22px;
+	margin-top: 20px;
+	overflow: hidden;
+	width: 520px;
+}
+
+.dictionary-exchange span {
+	color: #666;
+	display: inline-block;
+	font-size: 13px;
+	margin-right: 15px;
+}
+
+.dictionary-exchange span a {
+	color: #4395ff;
+	margin-right: 5px;
+	text-decoration: underline;
+}
+
+.dictionary-exchange>p {
+	display: inline-block;
+	float: left;
+	margin: 0px;
+}
