@@ -38,6 +38,7 @@
 	      	<audio preload id="audio-player"></audio>
 	      
 			<input id="passBtn" type="button" value="Pass" />
+			<span class="repeat-status" style="border: 1px solid green; margin-left: 80px; padding: 8px; cursor: pointer;">Repeat</span>
 	    </div>
 	    
 		<div id="word-title"></div>

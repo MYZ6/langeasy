@@ -9,6 +9,15 @@ $(function() {
 });
 
 function initEvent() {
+	$('.repeat-status').click(function(evt) {
+		if ($(this).hasClass('checked')) {
+			$(this).removeClass('checked');
+			repeatStatus = false;
+		} else {
+			$(this).addClass('checked');
+			repeatStatus = true;
+		}
+	});
 
 	function getSelectionText(e) {
 		var text = '';
@@ -50,7 +59,7 @@ function initEvent() {
 	});
 }
 
-function doPass(evt) {
+function doPass() {
 	$.ajax({
 		type : "GET",
 		url : root + '/api?t=pass',
@@ -66,6 +75,23 @@ function doPass(evt) {
 	});
 }
 
+function favorite(_target, _sentenceId) {
+	$.ajax({
+		type : "GET",
+		url : root + '/api?t=fav',
+		data : {
+			"sid" : _sentenceId
+		},
+		error : function() {
+			console.error("operate failed");
+		},
+		success : function(data) {
+			$(_target).parent().html('<span style="color: red; border: 1px solid yellow;">Favorited</span>');
+			initData(true);
+		}
+	});
+}
+
 function translate(word, x, y) {
 	$.ajax({
 		type : "GET",
@@ -77,16 +103,16 @@ function translate(word, x, y) {
 			console.error("query failed");
 		},
 		success : function(data) {
-			console.log(data);
 			$('#translate-panel').empty().html(data).show();
 		}
 	});
 }
 
-function initData() {
+function initData(_reload) {
 	if (type == '') {
 		type = 'list';
 	}
+	$('#word-list').empty();
 	$.ajax({
 		type : "GET",
 		url : root + '/api?t=' + type,
@@ -100,6 +126,9 @@ function initData() {
 				function(i, word) {
 					$word = $('<div id="word' + word.wordid + '" class="word-item"><span>' + (i + 1)
 						+ '/</span><span>' + word.wordid + '&nbsp;</span>' + word.word + '</div>');
+					if (word.favorite == true) {
+						$word.append('<span style="color: red; border: 1px solid yellow;">Favorited</span>');
+					}
 					$word.click(function() {
 						// var _url = root + '/word.jsp?id=' +
 						// word.wordid;
@@ -108,7 +137,9 @@ function initData() {
 					});
 					$('#word-list').append($word);
 				});
-			$('.word-item').eq(0).trigger('click');
+			if (_reload == undefined) {
+				$('.word-item').eq(0).trigger('click');
+			}
 		}
 	});
 }
@@ -151,10 +182,10 @@ function showWord(wordId) {
 					var _url = root + '/api?t=m&id=' + item.sentenceid + "&ts=" + new Date().getTime();
 					$sentence = $('<div class="aexample"><div>' + item.booktype
 						+ '</div><div class="book-name" bookid="' + item.bookid + '">' + item.bookname
-						+ '</div><div style="color: blue;">' + item.coursename
+						+ '</div><div style="color: blue;">' + item.coursename + favoriteRender(item)
 						+ '</div><div class="audio-item" data-src="' + _url + '"><span>' + (i + 1)
-						+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence) + '<div>' + item.chinese+ favoriteRender(item.favorite)
-						+ '</div></div>');
+						+ '</span>&nbsp;&nbsp;' + sentenceRender(item.sentence) + '<div>'
+						+ item.chinese + '</div></div>');
 
 					// $sentence.append('<audio controls
 					// src="' + _url +
@@ -173,11 +204,16 @@ function showWord(wordId) {
 				return result;
 			}
 
-			function favoriteRender(favorite) {
-				if (favorite == true) {
-					return '<span style="font-size: 28px; margin-left: 100px; color: red; border: 1px solid yellow;">Favorited</span>';
+			function favoriteRender(item) {
+				var result = '<span style="font-size: 28px; margin-left: 100px;"><span>';
+				if (item.favorite == true) {
+					result += '<span style="color: red; border: 1px solid yellow;">Favorited</span>';
+				} else {
+					result += '<a href="javascript:;" onclick="favorite(this, ' + item.sentenceid + ');" ' +
+						'style="text-decoration: underline;">favorite</a>';
 				}
-				return '<a href="javascript:;" style="font-size: 28px; margin-left: 100px; text-decoration: underline;">favorite</a>'
+				result += '</span><b>[' + item.playCount + ']</b></span>';
+				return result;
 			}
 
 			$('.book-name').click(function(evt) {
@@ -201,11 +237,15 @@ function showWord(wordId) {
 }
 
 var audioInstance = null;
+var repeatStatus = false;
 function initPlayerlist() {
 	// Setup the player to autoplay the next track
 	audioInstance = audiojs.create(document.getElementById('audio-player'), {
 		trackEnded : function() {
-			var next = $('.audio-item.playing').next();
+			var next = $('.audio-item.playing');
+			if (!repeatStatus) {
+				next = $('.audio-item.playing').parent().next().find('.audio-item');
+			}
 			if (!next.length)
 				next = $('.audio-item').first();
 			loadAudio($(next));
@@ -220,13 +260,13 @@ function initPlayerlist() {
 		var unicode = e.charCode ? e.charCode : e.keyCode;
 		// right arrow
 		if (unicode == 39) {
-			var next = $('.audio-item.playing').next();
+			var next = $('.audio-item.playing').parent().next().find('.audio-item');
 			if (!next.length)
 				next = $('.audio-item').first();
 			next.click();
 			// back arrow
 		} else if (unicode == 37) {
-			var prev = $('.audio-item.playing').prev();
+			var prev = $('.audio-item.playing').parent().prev().find('.audio-item');
 			if (!prev.length)
 				prev = $('.audio-item').last();
 			prev.click();
@@ -242,7 +282,8 @@ function initPlayerlist() {
 function loadAudio($target) {
 	audioInstance.load($target.attr('data-src'));
 	$('#audio-text').html($target.html());
-	$target.addClass('playing').siblings().removeClass('playing');
+	$target.addClass('playing');
+	$('.audio-item').not($target).removeClass('playing');
 	audioInstance.play();
 }
 
@@ -256,7 +297,20 @@ function resetPlayer() {
 		$('.audio-item').click(function(e) {
 			e.preventDefault();
 
-			loadAudio($(this));
+			// loadAudio($(this));
+
+			var that = this;
+			setTimeout(function() {
+				var dblclick = parseInt($(that).data('double'), 10);
+				if (dblclick > 0) {
+					$(that).data('double', dblclick - 1);
+				} else {
+					loadAudio($(that));
+				}
+			}, 300);
+		}).dblclick(function(evt) {
+			$(this).data('double', 2);
+			console.log('sd')
 		});
 	}
 }
