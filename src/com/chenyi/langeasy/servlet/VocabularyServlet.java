@@ -49,6 +49,9 @@ public class VocabularyServlet extends HttpServlet {
 			} else if ("list2".equals(type)) {
 				JSONArray arr = Vocabulary.listTest(conn);
 				outJS(response, arr.toString());
+			}  else if ("list3".equals(type)) {
+				JSONArray arr = Vocabulary.listSentence(conn);
+				outJS(response, arr.toString());
 			} else if ("book".equals(type)) {
 				String bookid = request.getParameter("id");
 				JSONObject book = Vocabulary.book(conn, bookid);

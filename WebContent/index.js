@@ -197,7 +197,7 @@ function showWord(wordId) {
 				});
 			function sentenceRender(sentence) {
 				var word = data.word;
-				var startIndex = sentence.indexOf(word);
+				var startIndex = sentence.toLowerCase().indexOf(word);
 				var endIndex = startIndex + word.length;
 				var result = sentence.substr(0, startIndex) + '<span style="color: red; font-weight: bold;">'
 					+ sentence.substr(startIndex, word.length) + '</span>' + sentence.substr(endIndex);
