@@ -45,8 +45,12 @@ public class SqliteHelper {
 			dbname = "langeasy";
 		}
 		Connection conn = connMap.get(dbname);
-		if (conn != null) {
-			return conn;
+		try {
+			if (conn != null && !conn.isClosed()) {
+				return conn;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		try {
 			Class.forName("org.sqlite.JDBC");
