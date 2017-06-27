@@ -1,0 +1,187 @@
+@charset "UTF-8";
+
+body {
+    font-size: 15px;
+    height: 600px;
+}
+
+#word-list {
+    float: left;
+    width: 200px;
+    /* 	height: 100%; */
+    height: 600px;
+    overflow: auto;
+}
+
+.command-zone {
+    float: left;
+    width: 200px;
+    height: 600px;
+    overflow: auto;
+    padding-top: 300px;
+    padding-left: 30px;
+    box-sizing: border-box;
+}
+
+.command-zone input {
+    font-size: 28px;
+    padding: 15px;
+    width: 150px;
+    margin-bottom: 50px;
+    cursor: pointer;
+}
+
+#word-list div {
+    margin: 10px;
+    cursor: pointer;
+}
+
+#word-content {
+    float: left;
+    width: 950px;
+    height: 600px;
+    overflow: auto;
+    position: relative;
+    margin: 5px;
+    padding: 8px;
+    padding-bottom: 50px;
+    box-sizing: border-box;
+    border: 1px solid blue;
+    margin: 5px;
+    /* 	height: 100%; */
+}
+
+#passBtn {
+    font-size: 20px;
+}
+
+.book-name span {
+    color: #338899;
+    cursor: pointer;
+}
+
+.example {
+    margin: 15px;
+}
+
+.aexample {
+    margin: 15px;
+}
+
+.audio-item span {
+    cursor: pointer;
+}
+
+.audio-item.playing {
+    font-style: italic;
+    font-size: 16px;
+    color: #889933;
+    font-weight: bold;
+}
+
+/*** 
+
+	player styling 
+
+***/
+h1 {
+    color: #444;
+    font-size: 1.2em;
+    padding: 14px 2px 12px;
+    margin: 0px;
+}
+
+h1 em {
+    font-style: normal;
+    color: #999;
+}
+
+a {
+    color: #888;
+    text-decoration: none;
+}
+
+#wrapper {
+    width: 600px;
+    margin: 40px auto;
+}
+
+ol {
+    padding: 0px;
+    margin: 0px;
+    list-style: decimal-leading-zero inside;
+    color: #ccc;
+    width: 460px;
+    border-top: 1px solid #ccc;
+    font-size: 0.9em;
+}
+
+ol li {
+    position: relative;
+    margin: 0px;
+    padding: 9px 2px 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+
+ol li a {
+    display: block;
+    text-indent: -3.3ex;
+    padding: 0px 0px 0px 20px;
+}
+
+li.playing {
+    color: #aaa;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+}
+
+li.playing a {
+    color: #000;
+}
+
+li.playing:before {
+    content: '♬';
+    width: 14px;
+    height: 14px;
+    padding: 3px;
+    line-height: 14px;
+    margin: 0px;
+    position: absolute;
+    left: -24px;
+    top: 9px;
+    color: #000;
+    font-size: 13px;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+}
+
+#novel-panel {
+    position: absolute;
+    /*display: none;*/
+    right: 0px;
+    bottom: 0px;
+    width: 550px;
+    height: 450px;
+    overflow: auto;
+    border: 1px solid green;
+    background: white;
+    padding: 8px;
+    font-size: 18px;
+}
+
+#translate-panel {
+    position: absolute;
+    display: none;
+    right: 0px;
+    bottom: 0px;
+    width: 350px;
+    height: 350px;
+    overflow: auto;
+    border: 1px solid green;
+    background: white;
+    padding: 8px;
+}
+
+#audio-example t.hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

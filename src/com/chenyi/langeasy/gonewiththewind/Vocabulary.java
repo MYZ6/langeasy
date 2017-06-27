@@ -20,7 +20,7 @@ import com.chenyi.langeasy.capture.CaptureUtil;
 
 public class Vocabulary {
 
-	static JSONArray listWord(Connection conn, String wtype)
+	static JSONArray listWord(Connection conn, String wtype, Integer limit)
 			throws JSONException, SQLException, FileNotFoundException, IOException {
 		String condition = "and ifnull(v.pass, 0) != 1 and ifnull(v.unknown, 0) != 1";
 		if ("2".equals(wtype)) {
@@ -32,8 +32,11 @@ public class Vocabulary {
 		if (!"2".equals(wtype)) {
 			// offset = queryTotal(conn, "2") + 500;
 		}
+		if (limit == null) {
+			limit = 200;
+		}
 		String sql = "SELECT wordid, word, pass from vocabulary v where 1=1 " + condition + " "
-				+ "order by word limit 200 offset " + offset + "";
+				+ "order by word limit " + limit + " offset " + offset + "";
 		Statement st = conn.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		JSONArray arr = new JSONArray();

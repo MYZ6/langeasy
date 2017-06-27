@@ -38,7 +38,11 @@ public class VocabularyServlet extends HttpServlet {
 		try {
 			if ("list".equals(type)) {
 				String wtype = request.getParameter("wtype");
-				JSONArray arr = Vocabulary.listWord(conn, wtype);
+				Integer limit = 200;
+				if ("3".equals(wtype)) {
+					limit = 20000;
+				}
+				JSONArray arr = Vocabulary.listWord(conn, wtype, limit);
 				Integer total = Vocabulary.queryTotal(conn, wtype);
 				JSONObject result = new JSONObject();
 				result.put("rows", arr);
@@ -62,6 +66,9 @@ public class VocabularyServlet extends HttpServlet {
 			} else if ("translate".equals(type)) {
 				String word = request.getParameter("word");
 				outHTML(response, Vocabulary.translate(word).toString());
+			} else if ("sentence".equals(type)) {
+				String word = request.getParameter("word");
+				outJS(response, Sentence.list(conn, word).toString());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
