@@ -71,6 +71,7 @@ function initEvent() {
 }
 
 function translate(word, x, y) {
+	$('#translate-panel').empty().html('<img src="loading.gif" />').show();
 	$.ajax({
 		type : "GET",
 		url : root + '/gwtw?t=translate',
@@ -81,7 +82,7 @@ function translate(word, x, y) {
 			console.error("query failed");
 		},
 		success : function(data) {
-			$('#translate-panel').empty().html(data).show();
+			$('#translate-panel').empty().html(data);
 		}
 	});
 }
