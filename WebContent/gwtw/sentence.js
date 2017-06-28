@@ -243,9 +243,8 @@ function getPartNum(paraIndex) {
 }
 function getChapterNum(paraIndex) {
 	for (var i = 62; i >= 0; i--) {
-		console.log(chapterIndex[i].index, paraIndex)
 		if (chapterIndex[i].index < paraIndex) {
-			return chapterIndex[i].num;
+			return chapterIndex[i].num + ' P' + (paraIndex - chapterIndex[i].index);
 		}
 	}
 }
