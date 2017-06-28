@@ -171,7 +171,7 @@ li.playing:before {
 #translate-panel {
     position: absolute;
     display: none;
-    right: 0px;
+    right: 570px;
     bottom: 0px;
     width: 350px;
     height: 350px;
